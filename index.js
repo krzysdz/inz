@@ -7,6 +7,9 @@ const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
 const app = express();
 app.set("view engine", "ejs");
 
+/***************************************************************************************
+ *** REMEMBER NOT TO USE EXTENDED URLENCODED BODY PARSER (prototype pollution in qs) ***
+ ***************************************************************************************/
 app.use(helmet());
 app.use("/static", express.static("static"));
 
