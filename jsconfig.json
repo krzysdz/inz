@@ -3,6 +3,8 @@
 		"target": "ESNext",
 		"checkJs": true,
 		"moduleResolution": "node",
-		"strict": true
-	}
+		"strict": true,
+		"typeRoots": ["./src/typings"]
+	},
+	"include": ["**/*.d.ts", "**/*.js"],
 }

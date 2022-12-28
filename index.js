@@ -1,21 +1,52 @@
+import MongoStore from "connect-mongo";
 import express from "express";
+import session from "express-session";
 import helmet from "helmet";
 import { env, exit } from "process";
+import { DB_NAME, SECRET } from "./config.js";
+import { client } from "./src/db.js";
+import { flasher } from "./src/flash.js";
+import { authRouter } from "./src/routes/auth.js";
 
 const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
 
 const app = express();
 app.set("view engine", "ejs");
 
+app.use(helmet());
+app.use("/static", express.static("static"));
 /***************************************************************************************
  *** REMEMBER NOT TO USE EXTENDED URLENCODED BODY PARSER (prototype pollution in qs) ***
  ***************************************************************************************/
-app.use(helmet());
-app.use("/static", express.static("static"));
+app.use(express.urlencoded({ extended: false }));
+app.use(session({
+	cookie: {
+		httpOnly: true,
+		sameSite: "strict",
+		secure: process.env.NODE_ENV === "production",
+		maxAge: 14 * 24 * 3600,
+	},
+	resave: false,
+	saveUninitialized: false,
+	secret: SECRET,
+	store: MongoStore.create({
+		client,
+		dbName: DB_NAME,
+		touchAfter: 24 * 3600,
+		ttl: 14 * 24 * 3600,
+	})
+}));
+app.use(flasher());
+app.use((req, res, next) => {
+	res.locals.flashedMessages = req.getFlashedMessages({ withCategories: true });
+	next();
+});
 
 app.get("/", (req, res) => {
 	res.render("index");
 });
+
+app.use("/auth", authRouter);
 
 const server = app.listen(PORT, () => console.log(`Listening on http://127.0.0.1:${PORT}`));
 
@@ -24,12 +55,16 @@ const server = app.listen(PORT, () => console.log(`Listening on http://127.0.0.1
  */
 function shutdown(signal) {
 	console.log(`Received ${signal}, shutting down`);
-	server.close((err) => {
+	server.close(async (err) => {
 		if (err) {
 			console.error("Could not gracefully stop the server", err);
+			await client.close();
 			exit(128);
 		}
 		console.log("Server closed");
+		await client.close();
+		console.log("DB connection closed");
+		exit(0);
 	});
 }
 
