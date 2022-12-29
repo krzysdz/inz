@@ -46,125 +46,132 @@
 		</symbol><% } %>
 	</svg>
 
-	<nav class="navbar navbar-expand-sm bg-body-tertiary">
-		<div class="container-fluid">
-			<a class="navbar-brand" href="/">Inz</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<ul class="navbar-nav me-auto mb-2 mb-sm-0">
-					<li class="nav-item">
-						<a class="nav-link<%= locals.activePage == "home" ? " active" : "" %>" aria-current="page" href="/">Home</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#">Link</a>
-					</li>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-							aria-expanded="false">
-							Dropdown
-						</a>
-						<ul class="dropdown-menu">
-							<li><a class="dropdown-item" href="#">Action</a></li>
-							<li><a class="dropdown-item" href="#">Another action</a></li>
-							<li>
-								<hr class="dropdown-divider">
-							</li>
-							<li><a class="dropdown-item" href="#">Something else here</a></li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
-					<li class="nav-item dropdown">
-						<button class="btn btn-link nav-link py-2 px-0 px-sm-2 dropdown-toggle d-flex align-items-center"
-							id="theme-btn" type="button" aria-expanded="false" data-bs-toggle="dropdown"
-							data-bs-display="static">
-							<svg class="bi my-1 theme-icon-active">
-								<use href="#circle-half"></use>
-							</svg>
-							<span class="d-sm-none ms-2">Toggle theme</span>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="theme-btn"
-							style="--bs-dropdown-min-width: 8rem;">
-							<li>
-								<button type="button" class="dropdown-item d-flex align-items-center"
-									data-bs-theme-value="light">
-									<svg class="bi me-2 opacity-50 theme-icon">
-										<use href="#sun-fill"></use>
-									</svg>
-									Light
-									<svg class="bi ms-auto d-none">
-										<use href="#check2"></use>
-									</svg>
-								</button>
-							</li>
-							<li>
-								<button type="button" class="dropdown-item d-flex align-items-center"
-									data-bs-theme-value="dark">
-									<svg class="bi me-2 opacity-50 theme-icon">
-										<use href="#moon-stars-fill"></use>
-									</svg>
-									Dark
-									<svg class="bi ms-auto d-none">
-										<use href="#check2"></use>
-									</svg>
-								</button>
-							</li>
-							<li>
-								<button type="button" class="dropdown-item d-flex align-items-center active"
-									data-bs-theme-value="auto">
-									<svg class="bi me-2 opacity-50 theme-icon">
-										<use href="#circle-half"></use>
-									</svg>
-									Auto
-									<svg class="bi ms-auto d-none">
-										<use href="#check2"></use>
-									</svg>
-								</button>
-							</li>
-						</ul>
-					</li>
-				<% if (locals.loggedIn) { %>
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" role="button"
-							data-bs-toggle="dropdown" aria-expanded="false">
-							<%= locals.username %>
-						</a>
-						<ul class="dropdown-menu dropdown-menu-end">
-							<li><a class="dropdown-item" href="/profile">Profile</a></li>
-							<li><a class="dropdown-item" href="#">Another action</a></li>
-							<li>
-								<hr class="dropdown-divider">
-							</li>
-							<li><a class="dropdown-item logout-btn" href="/auth/logout">Log out</a></li>
-						</ul>
-					</li>
-				<% } else { %>
-					<li class="nav-item">
-						<a class="btn btn-primary" role="button" href="/auth/login">Log in</a>
-					</li>
-				<% } %>
-				</ul>
+	<header>
+		<nav class="navbar navbar-expand-sm bg-body-tertiary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="/">Inz</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-sm-0">
+						<li class="nav-item">
+							<a class="nav-link<%= locals.activePage == "home" ? " active" : "" %>" aria-current="page" href="/">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Link</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+								aria-expanded="false">
+								Dropdown
+							</a>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item" href="#">Action</a></li>
+								<li><a class="dropdown-item" href="#">Another action</a></li>
+								<li>
+									<hr class="dropdown-divider">
+								</li>
+								<li><a class="dropdown-item" href="#">Something else here</a></li>
+							</ul>
+						</li>
+					</ul>
+					<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+						<li class="nav-item dropdown">
+							<button class="btn btn-link nav-link py-2 px-0 px-sm-2 dropdown-toggle d-flex align-items-center"
+								id="theme-btn" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+								data-bs-display="static">
+								<svg class="bi my-1 theme-icon-active">
+									<use href="#circle-half"></use>
+								</svg>
+								<span class="d-sm-none ms-2">Toggle theme</span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="theme-btn"
+								style="--bs-dropdown-min-width: 8rem;">
+								<li>
+									<button type="button" class="dropdown-item d-flex align-items-center"
+										data-bs-theme-value="light">
+										<svg class="bi me-2 opacity-50 theme-icon">
+											<use href="#sun-fill"></use>
+										</svg>
+										Light
+										<svg class="bi ms-auto d-none">
+											<use href="#check2"></use>
+										</svg>
+									</button>
+								</li>
+								<li>
+									<button type="button" class="dropdown-item d-flex align-items-center"
+										data-bs-theme-value="dark">
+										<svg class="bi me-2 opacity-50 theme-icon">
+											<use href="#moon-stars-fill"></use>
+										</svg>
+										Dark
+										<svg class="bi ms-auto d-none">
+											<use href="#check2"></use>
+										</svg>
+									</button>
+								</li>
+								<li>
+									<button type="button" class="dropdown-item d-flex align-items-center active"
+										data-bs-theme-value="auto">
+										<svg class="bi me-2 opacity-50 theme-icon">
+											<use href="#circle-half"></use>
+										</svg>
+										Auto
+										<svg class="bi ms-auto d-none">
+											<use href="#check2"></use>
+										</svg>
+									</button>
+								</li>
+							</ul>
+						</li>
+					<% if (locals.loggedIn) { %>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false">
+								<%= locals.username %>
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li><a class="dropdown-item" href="/profile">Profile</a></li>
+								<li><a class="dropdown-item" href="#">Another action</a></li>
+								<li>
+									<hr class="dropdown-divider">
+								</li>
+								<li><a class="dropdown-item logout-btn" href="/auth/logout">Log out</a></li>
+							</ul>
+						</li>
+					<% } else { %>
+						<li class="nav-item">
+							<a class="btn btn-primary" role="button" href="/auth/login">Log in</a>
+						</li>
+					<% } %>
+					</ul>
+				</div>
 			</div>
-		</div>
-	</nav>
+		</nav>
+	</header>
 
-<% if (flashedMessages.length) {
-	flashedMessages.forEach(([message, category])=> {
+<% if (flashedMessages.length) { %>
+	<div class="container-xl mt-3">
+	<% flashedMessages.forEach(([message, category])=> {
 		if (category === "error") category = "danger";
 		category = ["success", "warning", "danger"].includes(category) ? category : "primary";
 		const icon = { primary: "info", success: "check-circle", warning: "exclamation-triangle", danger: "x-octagon" }[category];
 		const label = category.charAt(0).toUpperCase() + category.slice(1); %>
 
-	<div class="alert alert-<%- category %> alert-dismissible fade show d-flex align-items-center" role="alert">
-		<svg class="bi flex-shrink-0 me-2" role="img" aria-label="<%- label %>:">
-			<use xlink:href="#<%- icon %>-fill" />
-		</svg>
-		<div>
-			<%= message %>
+		<div class="alert alert-<%- category %> alert-dismissible fade show d-flex align-items-center" role="alert">
+			<svg class="bi flex-shrink-0 me-2" role="img" aria-label="<%- label %>:">
+				<use xlink:href="#<%- icon %>-fill" />
+			</svg>
+			<div>
+				<%= message %>
+			</div>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 		</div>
-		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	<% }) %>
 	</div>
-<% }) } %>
+<% } %>
+
+	<main class="container-xl mt-3">

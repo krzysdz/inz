@@ -1,10 +1,16 @@
 <%- include("header", { title: "Register" }) %>
-	<form method="post">
-		<label for="username">Username:</label>
-		<input id="username" type="text" name="username" maxlength="255">
-		<label for="password">Password:</label>
-		<input id="password" type="password" name="password" maxlength="64" minlength="8">
-		<button type="submit">Register</button>
-	</form>
-	<a href="/auth/login">Log in</a>
+		<h3>Register</h3>
+		<form method="post">
+			<div class="mb-3">
+				<label for="username" class="form-label">Username:</label>
+				<input id="username" class="form-control" type="text" name="username" maxlength="255" required>
+			</div>
+			<div class="mb-3">
+				<label for="password" class="form-label">Password:</label>
+				<input id="password" class="form-control" type="password" name="password" maxlength="64" minlength="8" required aria-describedby="password-reqs">
+				<div id="password-reqs" class="form-text">Password must be between 8 and 64 characters long.</div>
+			</div>
+			<button type="submit" class="btn btn-primary">Register</button>
+		</form>
+		<a href="/auth/login">Log in</a>
 <%- include("footer") %>
