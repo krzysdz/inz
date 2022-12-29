@@ -19,7 +19,8 @@ const register = async (req, res) => {
 	if (typeof username !== "string") errors.push("Username must be provided.");
 	else if (username.length > 255) errors.push("Maximum username length is 255 characters.");
 	if (typeof password !== "string") errors.push("Password must be provided.");
-	else if (password.length < 8 || password.length > 64) errors.push("Password must have between 8 and 64 characters long.");
+	else if (password.length < 8 || password.length > 64)
+		errors.push("Password must have between 8 and 64 characters long.");
 
 	if (errors.length) return res.render("register", { errors });
 
@@ -34,14 +35,16 @@ const register = async (req, res) => {
 		if (error instanceof WriteError && error.code === 11000) errors.push("Username taken");
 		else {
 			console.error(error);
-			errors.push("Something went wrong. Try again later. If the problem persists, please contact administrators.");
+			errors.push(
+				"Something went wrong. Try again later. If the problem persists, please contact administrators."
+			);
 		}
 		res.render("register", { errors });
 	}
 };
 authRouter.post("/register", register);
 
-authRouter.get("/login", (req, res) => {
+authRouter.get("/login", (_req, res) => {
 	res.render("login");
 });
 
@@ -54,20 +57,44 @@ const login = async (req, res) => {
 	if (typeof username !== "string") errors.push("Username must be provided.");
 	else if (username.length > 255) errors.push("Maximum username length is 255 characters.");
 	if (typeof password !== "string") errors.push("Password must be provided.");
-	else if (password.length < 8 || password.length > 64) errors.push("Password must have between 8 and 64 characters long.");
+	else if (password.length < 8 || password.length > 64)
+		errors.push("Password must have between 8 and 64 characters long.");
 
-	if (errors.length) return res.render("login", { errors });
+	if (errors.length) {
+		for (const err of errors) {
+			req.flash(err, "error");
+		}
+		return res.render("login");
+	}
 
 	/** @type {import("mongodb").Collection<UserDoc>} */
 	const usersColl = db.collection("users");
 	const user = await usersColl.findOne({ _id: username });
-	if (!user)
-		return res.render("login", { errors: ["Invalid username or password"] });
+	if (!user) {
+		req.flash("Invalid username or password", "error");
+		return res.render("login");
+	}
 	const passwordMatch = await argon2.verify(user.hash, password);
-	if (!passwordMatch)
-		return res.render("login", { errors: ["Invalid username or password"] });
+	if (!passwordMatch) {
+		req.flash("Invalid username or password", "error");
+		return res.render("login");
+	}
 
 	req.session.user = { username: user._id, role: user.role };
 	return res.redirect("/");
 };
 authRouter.post("/login", login);
+
+/** @type {import("express").RequestHandler} */
+const logout = (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error(err);
+			req.flash("Logout failed. Try again later", "error");
+			return res.status(500).render("error");
+		}
+		req.flash("Logged out successfully", "info");
+		return res.redirect("/");
+	});
+};
+authRouter.get("/logout", logout);

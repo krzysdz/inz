@@ -1,0 +1,17 @@
+/* Bootstrap icon class */
+.bi {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.125em;
+	fill: currentcolor;
+}
+
+.logout-btn {
+	--bs-dropdown-link-color: var(--bs-danger-text);
+	--bs-border-color: var(--bs-danger-border-subtle);
+}
+
+.logout-btn:hover {
+	--bs-dropdown-link-hover-color: var(--bs-danger-text);
+	--bs-dropdown-link-hover-bg: var(--bs-danger-bg-subtle);
+}

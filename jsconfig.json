@@ -6,5 +6,5 @@
 		"strict": true,
 		"typeRoots": ["./src/typings"]
 	},
-	"include": ["**/*.d.ts", "**/*.js"],
+	"include": ["**/*.d.ts", "**/*.js"]
 }

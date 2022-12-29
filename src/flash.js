@@ -3,10 +3,18 @@
  */
 export function flasher() {
 	/** @type {import("express").RequestHandler} */
-	const middleware = (req, _res, next) => {
-		req.flash = (message, category = "message") => {
-			let flashes = req.session.flashes ?? [];
-			req.session.flashes = [...flashes, [message, category]];
+	const middleware = (req, res, next) => {
+		req.flash = (message, category = "info") => {
+			if (!req.session) return;
+
+			/** @type {[string, string]} */
+			const flash = [message, category];
+			if (req._flashes) {
+				req._flashes.push(flash);
+			} else {
+				const flashes = req.session.flashes ?? [];
+				req.session.flashes = [...flashes, flash];
+			}
 		};
 
 		/**
@@ -28,6 +36,7 @@ export function flasher() {
 		req.getFlashedMessages = ({ categories, withCategories }) => {
 			let flashes = req._flashes;
 			if (!flashes) {
+				if (!req.session) return [];
 				flashes = req.session.flashes ?? [];
 				req._flashes = flashes;
 				delete req.session.flashes;
@@ -35,12 +44,14 @@ export function flasher() {
 			/** @type {[string, string][]} */
 			let filtered;
 			let filter = typeof categories === "string" ? [categories] : categories;
-			if (filter) filtered = flashes.filter(msg => filter?.includes(msg[1]));
+			if (filter) filtered = flashes.filter((msg) => filter?.includes(msg[1]));
 			else filtered = flashes;
 
 			if (withCategories) return filtered;
-			return filtered.map(msg => msg[0]);
+			return filtered.map((msg) => msg[0]);
 		};
+
+		res.locals.getFlashedMessages = req.getFlashedMessages;
 
 		next();
 	};

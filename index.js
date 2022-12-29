@@ -12,38 +12,53 @@ const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
 
 const app = express();
 app.set("view engine", "ejs");
+app.set("view options", { strict: true });
 
-app.use(helmet());
+app.use(
+	helmet({
+		contentSecurityPolicy: {
+			directives: {
+				scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+			},
+		},
+	})
+);
 app.use("/static", express.static("static"));
 /***************************************************************************************
  *** REMEMBER NOT TO USE EXTENDED URLENCODED BODY PARSER (prototype pollution in qs) ***
  ***************************************************************************************/
 app.use(express.urlencoded({ extended: false }));
-app.use(session({
-	cookie: {
-		httpOnly: true,
-		sameSite: "strict",
-		secure: process.env.NODE_ENV === "production",
-		maxAge: 14 * 24 * 3600,
-	},
-	resave: false,
-	saveUninitialized: false,
-	secret: SECRET,
-	store: MongoStore.create({
-		client,
-		dbName: DB_NAME,
-		touchAfter: 24 * 3600,
-		ttl: 14 * 24 * 3600,
+app.use(
+	session({
+		cookie: {
+			httpOnly: true,
+			sameSite: "strict",
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 14 * 24 * 3600_000,
+		},
+		resave: false,
+		saveUninitialized: false,
+		secret: SECRET,
+		store: MongoStore.create({
+			client,
+			dbName: DB_NAME,
+			touchAfter: 24 * 3600,
+			ttl: 14 * 24 * 3600,
+		}),
 	})
-}));
+);
 app.use(flasher());
 app.use((req, res, next) => {
-	res.locals.flashedMessages = req.getFlashedMessages({ withCategories: true });
+	// res.locals.flashedMessages = req.getFlashedMessages({ withCategories: true });
+	res.locals.loggedIn = typeof req.session.user !== "undefined";
+	res.locals.username = req.session.user?.username ?? "";
+	res.locals.userRole = req.session.user?.role ?? "none";
+	res.locals.activePage = ""; // placeholder
 	next();
 });
 
-app.get("/", (req, res) => {
-	res.render("index");
+app.get("/", (_req, res) => {
+	res.render("index", { activePage: "home" });
 });
 
 app.use("/auth", authRouter);

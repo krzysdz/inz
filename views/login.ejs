@@ -1,15 +1,4 @@
 <%- include("header", { title: "Log in" }) %>
-
-	<% if (typeof errors !== "undefined") { %>
-		<ul>
-			<% errors.forEach(error=> { %>
-				<li>
-					<%= error %>
-				</li>
-			<% }) %>
-		</ul>
-	<% } %>
-
 	<form method="post">
 		<label for="username">Username:</label>
 		<input id="username" type="text" name="username" maxlength="255">
@@ -18,5 +7,4 @@
 		<button type="submit">Sign in</button>
 	</form>
 	<a href="/auth/register">Create an account</a>
-
 <%- include("footer") %>
