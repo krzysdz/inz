@@ -66,6 +66,10 @@ app.get("/", (_req, res) => {
 app.use("/auth", authRouter);
 app.use("/profile", [authenticated, profileRouter]);
 
+app.use((_req, res) => {
+	res.status(404).render("errors/404");
+});
+
 const server = app.listen(PORT, () => console.log(`Listening on http://127.0.0.1:${PORT}`));
 
 /**
