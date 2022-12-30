@@ -129,12 +129,12 @@
 						</li>
 					<% if (locals.loggedIn) { %>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" role="button"
+							<a class="nav-link dropdown-toggle<%= ["profile", "admin panel"].includes(locals.activePage) ? " active" : "" %>" href="#" role="button"
 								data-bs-toggle="dropdown" aria-expanded="false">
 								<%= locals.username %>
 							</a>
 							<ul class="dropdown-menu dropdown-menu-end">
-								<li><a class="dropdown-item" href="/profile">Profile</a></li>
+								<li><a class="dropdown-item<%= locals.activePage == "profile" ? " active" : "" %>" href="/profile">Profile</a></li>
 								<li><a class="dropdown-item" href="#">Another action</a></li>
 								<li>
 									<hr class="dropdown-divider">
@@ -154,7 +154,7 @@
 	</header>
 
 <% if (flashedMessages.length) { %>
-	<div class="container-xl mt-3">
+	<div class="container mt-3">
 	<% flashedMessages.forEach(([message, category])=> {
 		if (category === "error") category = "danger";
 		category = ["success", "warning", "danger"].includes(category) ? category : "primary";

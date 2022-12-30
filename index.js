@@ -6,7 +6,9 @@ import { env, exit } from "process";
 import { DB_NAME, SECRET } from "./config.js";
 import { client } from "./src/db.js";
 import { flasher } from "./src/flash.js";
+import { authenticated } from "./src/middleware.js";
 import { authRouter } from "./src/routes/auth.js";
+import { profileRouter } from "./src/routes/profile.js";
 
 const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
 
@@ -62,6 +64,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/profile", [authenticated, profileRouter]);
 
 const server = app.listen(PORT, () => console.log(`Listening on http://127.0.0.1:${PORT}`));
 
