@@ -7,6 +7,7 @@ import { DB_NAME, SECRET } from "./config.js";
 import { client } from "./src/db.js";
 import { flasher } from "./src/flash.js";
 import { authenticated } from "./src/middleware.js";
+import { adminRouter } from "./src/routes/admin.js";
 import { authRouter } from "./src/routes/auth.js";
 import { profileRouter } from "./src/routes/profile.js";
 
@@ -65,6 +66,7 @@ app.get("/", (_req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/profile", [authenticated, profileRouter]);
+app.use("/admin", [authenticated, adminRouter]);
 
 app.use((_req, res) => {
 	res.status(404).render("errors/404");

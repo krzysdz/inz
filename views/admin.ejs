@@ -1,0 +1,80 @@
+<%- include("header", { title: "Admin panel" }) %>
+		<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+			<symbol id="trash-full" viewBox="0 0 16 16">
+				<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+			</symbol>
+			<symbol id="person-fill-exclamation" viewBox="0 0 16 16">
+				<path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+				<path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1.5a.5.5 0 0 0 1 0V11a.5.5 0 0 0-.5-.5Zm0 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/>
+			</symbol>
+		</svg>
+		<h1 class="mb-3">Admin panel</h1>
+		<nav>
+			<div class="nav nav-tabs" id="nav-tab" role="tablist">
+				<button class="nav-link active" id="nav-users-tab" data-bs-toggle="tab" data-bs-target="#nav-users" type="button" role="tab" aria-controls="nav-users" aria-selected="true">Users</button>
+				<button class="nav-link" id="nav-categories-tab" data-bs-toggle="tab" data-bs-target="#nav-categories" type="button" role="tab" aria-controls="nav-categories" aria-selected="false">Categories</button>
+				<button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+				<button class="nav-link" id="nav-disabled-tab" data-bs-toggle="tab" data-bs-target="#nav-disabled" type="button" role="tab" aria-controls="nav-disabled" aria-selected="false" disabled>Disabled</button>
+			</div>
+		</nav>
+		<div class="tab-content" id="nav-tabContent">
+			<div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labelledby="nav-users-tab" tabindex="0">
+				<table class="table last-col-small">
+					<thead>
+						<tr>
+							<th>Username</th>
+							<th>Role</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody class="placeholder-wave" id="users-tbody">
+						<tr>
+							<th><span class="placeholder col-12"></span></th>
+							<td><span class="placeholder col-12"></span></td>
+							<td><span class="placeholder col-12"></span></td>
+						</tr>
+						<tr>
+							<th><span class="placeholder col-12"></span></th>
+							<td><span class="placeholder col-12"></span></td>
+							<td><span class="placeholder col-12"></span></td>
+						</tr>
+						<tr>
+							<th><span class="placeholder col-12"></span></th>
+							<td><span class="placeholder col-12"></span></td>
+							<td><span class="placeholder col-12"></span></td>
+						</tr>
+					</tbody>
+				</table>
+				<nav aria-label="Users list navigation">
+					<ul class="pagination" id="users-pagination">
+						<li class="page-item"><a class="page-link disabled" href="#" data-page="prev">Previous</a></li>
+						<li class="page-item"><a class="page-link active" href="#" data-page="1">1</a></li>
+						<li class="page-item"><a class="page-link disabled" href="#" data-page="next">Next</a></li>
+					</ul>
+				</nav>
+			</div>
+			<div class="tab-pane fade" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab" tabindex="0">
+				<article><h2>Categories</h2></article>
+			</div>
+			<div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">...</div>
+			<div class="tab-pane fade" id="nav-disabled" role="tabpanel" aria-labelledby="nav-disabled-tab" tabindex="0">...</div>
+		</div>
+		<template id="user-row-template">
+			<tr>
+				<th data-cell-role="username"></th>
+				<td data-cell-role="role"></td>
+				<td>
+					<button class="btn btn-outline-warning" type="button" data-button-action="role" aria-label="Toggle role">
+						<svg class="bi"><use href="#person-fill-exclamation"></use></svg>
+					</button>
+					<button class="btn btn-outline-danger" type="button" data-button-action="delete" aria-label="Delete user">
+						<svg class="bi"><use href="#trash-full"></use></svg>
+					</button>
+				</td>
+			</tr>
+		</template>
+		<template id="pagination-link-template">
+			<li class="page-item"><a class="page-link" href="#" data-page=""></a></li>
+		</template>
+		<script src="/static/js/admin_client.js" type="module"></script>
+<%- include("footer") %>

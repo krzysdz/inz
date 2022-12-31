@@ -15,3 +15,12 @@
 	--bs-dropdown-link-hover-color: var(--bs-danger-text);
 	--bs-dropdown-link-hover-bg: var(--bs-danger-bg-subtle);
 }
+
+.table.last-col-small tr > *:last-child {
+	/* Super hacky, but works: 2 * (button width [1em] + 2 * (button padding [0.75em] + button border [1 px])) + 2 * cell padding [1rem] + 5px for some reason (spacing?) */
+	/* --weird-width: calc(5em + 4px + 1rem + 5px);
+	max-width: var(--weird-width);
+	width: var(--weird-width); */
+	width: 1%;
+	white-space: nowrap;
+}

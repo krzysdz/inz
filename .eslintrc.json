@@ -8,10 +8,11 @@
 		"ecmaVersion": "latest",
 		"sourceType": "module"
 	},
+	"plugins": ["prettier"],
 	"rules": {
 		"indent": ["error", "tab"],
 		"linebreak-style": ["error", "unix"],
-		"quotes": ["error", "double"],
+		"prettier/prettier": "error",
 		"semi": ["error", "always"]
 	}
 }

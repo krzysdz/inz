@@ -1,6 +1,6 @@
 <% const flashedMessages = locals.getFlashedMessages({withCategories: true}); %>
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="en" data-bs-theme="auto" <% if (locals.loggedIn) { %>data-username="<%= locals.username %>"<% } %>>
 
 <head>
 	<meta charset="UTF-8">
@@ -127,6 +127,10 @@
 								</li>
 							</ul>
 						</li>
+						<li class="nav-item py-2 py-sm-1 col-12 col-sm-auto">
+							<div class="vr d-none d-sm-flex h-100 mx-sm-2 text-white"></div>
+							<hr class="d-sm-none my-2 text-white-50">
+						</li>
 					<% if (locals.loggedIn) { %>
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle<%= ["profile", "admin panel"].includes(locals.activePage) ? " active" : "" %>" href="#" role="button"
@@ -135,7 +139,9 @@
 							</a>
 							<ul class="dropdown-menu dropdown-menu-end">
 								<li><a class="dropdown-item<%= locals.activePage == "profile" ? " active" : "" %>" href="/profile">Profile</a></li>
-								<li><a class="dropdown-item" href="#">Another action</a></li>
+							<% if (locals.userRole === "admin") { %>
+								<li><a class="dropdown-item<%= locals.activePage == "admin panel" ? " active" : "" %>" href="/admin">Admin panel</a></li>
+							<% } %>
 								<li>
 									<hr class="dropdown-divider">
 								</li>
