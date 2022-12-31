@@ -48,7 +48,7 @@
 	});
 
 	window.addEventListener("DOMContentLoaded", () => {
-		showActiveTheme(getPreferredTheme());
+		showActiveTheme(storedTheme ? storedTheme : "auto"); // default to auto
 
 		document.querySelectorAll("[data-bs-theme-value]").forEach((toggle) => {
 			toggle.addEventListener("click", () => {
