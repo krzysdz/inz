@@ -1,4 +1,5 @@
 import * as express from "express";
+import { WithId } from "mongodb";
 
 declare interface UsersList {
 	users: { username: string; role: UserDoc["role"] }[];
@@ -12,6 +13,10 @@ declare interface UsersList {
 
 declare interface ChangeUserRole {
 	role: UserDoc["role"];
+}
+
+declare interface CategoriesList {
+	categories: WithId<CategoryDoc>[]
 }
 
 declare interface AdminErrorResponse {

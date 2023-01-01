@@ -1,0 +1,118 @@
+/* Highlight.js style switching between "Panda Syntax Light" and "Panda Syntax Dark" based on the data-bs-theme attribute. */
+pre code.hljs {
+	display: block;
+	overflow-x: auto;
+	padding: 1em;
+}
+code.hljs {
+	padding: 3px 5px;
+}
+.hljs {
+	color: var(--panda-color-base);
+	background: var(--panda-color-background);
+}
+.hljs-emphasis {
+	font-style: italic;
+}
+.hljs-strong {
+	font-weight: 700;
+}
+.hljs-link {
+	text-decoration: underline;
+}
+.hljs-comment,
+.hljs-quote {
+	color: var(--panda-color-comment);
+	font-style: italic;
+}
+.hljs-params {
+	color: var(--panda-color-comment);
+}
+.hljs-attr {
+	color: var(--panda-color-base);
+}
+.hljs-meta,
+.hljs-name,
+.hljs-selector-tag {
+	color: var(--panda-color-name);
+}
+.hljs-char.escape_,
+.hljs-operator {
+	color: var(--panda-color-operator);
+}
+.hljs-deletion,
+.hljs-keyword {
+	color: var(--panda-color-deletion);
+}
+.hljs-regexp,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-variable.language_ {
+	color: var(--panda-color-regexp);
+}
+.hljs-code,
+.hljs-formula,
+.hljs-property,
+.hljs-section,
+.hljs-subst,
+.hljs-title.function_ {
+	color: var(--panda-color-property);
+}
+.hljs-addition,
+.hljs-bullet,
+.hljs-meta .hljs-string,
+.hljs-selector-class,
+.hljs-string,
+.hljs-symbol,
+.hljs-title.class_,
+.hljs-title.class_.inherited__ {
+	color: var(--panda-color-string);
+}
+.hljs-attribute,
+.hljs-built_in,
+.hljs-doctag,
+.hljs-link,
+.hljs-literal,
+.hljs-meta .hljs-keyword,
+.hljs-number,
+.hljs-selector-id,
+.hljs-tag,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-title,
+.hljs-type,
+.hljs-variable {
+	color: var(--panda-color-var);
+}
+.hljs-punctuation {
+	color: var(--panda-color-punctuation);
+}
+
+:root,
+[data-bs-theme="light"] {
+	--panda-color-var: #7641bb;
+	--panda-color-string: #0d7d6c;
+	--panda-color-property: #3787c7;
+	--panda-color-regexp: #cc5e91;
+	--panda-color-deletion: #d92792;
+	--panda-color-operator: #c56200;
+	--panda-color-name: var(--panda-color-operator);
+	--panda-color-comment: #676b79;
+	--panda-color-base: #2a2c2d;
+	--panda-color-background: #e6e6e6;
+	--panda-color-punctuation: var(--panda-color-base);
+}
+
+[data-bs-theme="dark"] {
+	--panda-color-var: #ffb86c;
+	--panda-color-string: #19f9d8;
+	--panda-color-property: #45a9f9;
+	--panda-color-regexp: #ff9ac1;
+	--panda-color-deletion: #ff75b5;
+	--panda-color-operator: #b084eb;
+	--panda-color-name: #ff4b82;
+	--panda-color-comment: #bbb;
+	--panda-color-base: #e6e6e6;
+	--panda-color-background: #2a2c2d;
+	--panda-color-punctuation: var(--panda-color-var);
+}

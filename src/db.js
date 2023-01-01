@@ -12,12 +12,24 @@ let client;
 if (process.env.NODE_ENV === "production") {
 	client = new MongoClient(DB_URL, { appName: "inz_app" });
 	db = client.db(DB_NAME);
+	setupDb(db);
 } else {
 	if (!global.__client) {
 		global.__client = new MongoClient(DB_URL, { appName: "inz_app_dev" });
 	}
 	client = global.__client;
 	db = client.db(DB_NAME);
+	setupDb(db);
+}
+
+/**
+ * @param {import("mongodb").Db} db
+ */
+async function setupDb(db) {
+	/** @type {import("mongodb").Collection<CategoryDoc>} */
+	const categories = db.collection("categories");
+	// Make sure that there is an unique index on name in the categories collection
+	await categories.createIndex({ name: 1 }, { unique: true });
 }
 
 export { db, client };
