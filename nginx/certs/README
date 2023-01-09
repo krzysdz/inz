@@ -1,0 +1,9 @@
+This directory should contain private key and certificates. Because OCSP stapling is enabled in the config, an ordinary self-signed key/certificate pair is not enough (or wasn't enough in July 2022), but an own CA with no support for OCSP will be ok (a warning will be logged).
+An example script for creating CA is in scripts/CA. A modification to scripts/CA/cnf/server.conf is suggested, because the default domains probably won't work by default.
+
+This directory is gitignored to avoid committing private keys.
+
+Expected files:
+- privkey.pem (private key)
+- fullchain.pem (full certificate chain with the leaf certificate)
+- chain.pem (CA and intermediate certificates)

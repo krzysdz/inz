@@ -156,23 +156,39 @@ mdParser.setOptions({
 });
 
 /** @type {HTMLInputElement} */ // @ts-ignore
-const togglePreviewBtn = document.getElementById("preview-toggle");
+const toggleCatPreviewBtn = document.getElementById("preview-toggle");
 /** @type {HTMLTextAreaElement} */ // @ts-ignore
-const descriptionTextarea = document.getElementById("category-description");
+const catDescriptionTextarea = document.getElementById("category-description");
 /** @type {HTMLDivElement} */ // @ts-ignore
-const previewDiv = document.getElementById("description-preview");
-togglePreviewBtn.addEventListener("change", async () => {
-	if (togglePreviewBtn.checked) {
-		const descriptionRaw = descriptionTextarea.value;
+const catPreviewDiv = document.getElementById("description-preview");
+toggleCatPreviewBtn.addEventListener("change", async () => {
+	if (toggleCatPreviewBtn.checked) {
+		const descriptionRaw = catDescriptionTextarea.value;
 		const parsed = await mdParser.parse(descriptionRaw, { async: true });
-		previewDiv.innerHTML = parsed;
+		catPreviewDiv.innerHTML = parsed;
 	}
-	previewDiv.classList.toggle("d-none");
-	descriptionTextarea.classList.toggle("d-none");
+	catPreviewDiv.classList.toggle("d-none");
+	catDescriptionTextarea.classList.toggle("d-none");
+});
+/** @type {HTMLInputElement} */ // @ts-ignore
+const toggleTaskPreviewBtn = document.getElementById("task-preview-toggle");
+/** @type {HTMLTextAreaElement} */ // @ts-ignore
+const taskDescriptionTextarea = document.getElementById("task-description");
+/** @type {HTMLDivElement} */ // @ts-ignore
+const taskPreviewDiv = document.getElementById("task-description-preview");
+toggleTaskPreviewBtn.addEventListener("change", async () => {
+	if (toggleTaskPreviewBtn.checked) {
+		const descriptionRaw = taskDescriptionTextarea.value;
+		const parsed = await mdParser.parse(descriptionRaw, { async: true });
+		taskPreviewDiv.innerHTML = parsed;
+	}
+	taskPreviewDiv.classList.toggle("d-none");
+	taskDescriptionTextarea.classList.toggle("d-none");
 });
 
 import autosize from "./textarea-autosize.js";
-autosize(descriptionTextarea);
+autosize(catDescriptionTextarea);
+autosize(taskDescriptionTextarea);
 
 /** @type {HTMLDivElement} */ // @ts-ignore
 const categoryEditor = document.getElementById("category-editor");
@@ -197,7 +213,7 @@ categoryForm.addEventListener("submit", (e) => {
 
 	const categoryDoc = {
 		name: catNameElement.value,
-		description: descriptionTextarea.value,
+		description: catDescriptionTextarea.value,
 		// @ts-ignore
 		descriptionFormat: categoryForm.elements.namedItem("descriptionFormat").value,
 	};
@@ -222,8 +238,8 @@ function createCategory() {
 		categoryForm.dataset.operation = "create";
 		categorySubmitBtn.textContent = "Create";
 	}
-	if (togglePreviewBtn.checked) togglePreviewBtn.click();
-	previewDiv.textContent = "";
+	if (toggleCatPreviewBtn.checked) toggleCatPreviewBtn.click();
+	catPreviewDiv.textContent = "";
 
 	categoryEditor.classList.remove("d-none");
 	catNameElement.focus();
@@ -241,16 +257,16 @@ function editCategory(e) {
 	categoryForm.dataset.cid = cid;
 	categoryForm.dataset.operation = "edit";
 	catNameElement.value = name;
-	descriptionTextarea.value = descriptionRaw;
-	if (togglePreviewBtn.checked) togglePreviewBtn.click();
-	previewDiv.textContent = "";
+	catDescriptionTextarea.value = descriptionRaw;
+	if (toggleCatPreviewBtn.checked) toggleCatPreviewBtn.click();
+	catPreviewDiv.textContent = "";
 	categorySubmitBtn.textContent = "Save";
 
 	categoryEditor.classList.remove("d-none");
 	catNameElement.focus();
 	categoryEditor.scrollIntoView();
 	// dispatch an input event to resize the textarea **after** scrolling
-	setTimeout(() => descriptionTextarea.dispatchEvent(new Event("input")), 100);
+	setTimeout(() => catDescriptionTextarea.dispatchEvent(new Event("input")), 100);
 }
 
 async function loadCategories() {
@@ -260,6 +276,7 @@ async function loadCategories() {
 	/** @type {HTMLTemplateElement} */ // @ts-ignore
 	const categoryTemplate = document.getElementById("category-template");
 	const categoriesFragment = new DocumentFragment();
+	const optionsFragment = new DocumentFragment();
 	for (const cat of response.categories) {
 		/** @type {HTMLDivElement} */ // @ts-ignore
 		const clone = categoryTemplate.content.firstElementChild.cloneNode(true);
@@ -290,11 +307,231 @@ async function loadCategories() {
 		content.innerHTML = descriptionProcessed ? descriptionProcessed : descriptionRaw;
 
 		categoriesFragment.appendChild(clone);
+
+		// @ts-ignore - object serialized from JSON, _id is a string representation of ObjectId
+		optionsFragment.appendChild(new Option(name, _id));
 	}
 	document.getElementById("categoriesAccordionContainer")?.replaceChildren(categoriesFragment);
+	document.getElementById("task-category")?.replaceChildren(optionsFragment);
 }
 
 loadCategories().catch((e) => console.error(e));
+
+/** @type {HTMLDivElement} */ // @ts-ignore
+const taskEditor = document.getElementById("task-editor");
+/** @type {HTMLFormElement} */ // @ts-ignore
+const taskForm = document.getElementById("task-form");
+/** @type {HTMLInputElement} */ // @ts-ignore
+const taskNameElement = taskForm.elements.namedItem("name");
+/** @type {HTMLOListElement} */ // @ts-ignore
+const hintsList = document.getElementById("task-hints-list");
+
+document.getElementById("new-task-btn")?.addEventListener("click", () => {
+	if (toggleTaskPreviewBtn.checked) toggleTaskPreviewBtn.click();
+
+	taskEditor.classList.remove("d-none");
+	taskNameElement.focus();
+});
+
+document.getElementById("task-btn-cancel")?.addEventListener("click", (e) => {
+	e.preventDefault();
+	taskEditor.classList.add("d-none");
+});
+
+document.getElementById("task-add-hint")?.addEventListener("click", (e) => {
+	e.preventDefault();
+	/** @type {HTMLTemplateElement} */ // @ts-ignore
+	addHintInput(true);
+});
+
+addHintInput();
+
+/**
+ * @param {boolean | undefined} [focus]
+ */
+function addHintInput(focus) {
+	const hintTemplate = document.getElementById("hint-template");
+	/** @type {HTMLLIElement} */ // @ts-ignore
+	const hintInput = hintTemplate.content.firstElementChild.cloneNode(true);
+	hintInput.querySelector("button")?.addEventListener(
+		"click",
+		(e) => {
+			e.preventDefault();
+			hintsList.removeChild(hintInput);
+		},
+		{ once: true }
+	);
+	hintsList.appendChild(hintInput);
+	focus && hintInput.querySelector("input")?.focus();
+}
+
+/**
+ * @param {boolean} [focus]
+ */
+function addAnswer(focus) {
+	/** @type {HTMLDivElement} */ // @ts-ignore
+	const answersContainer = document.getElementById("answers-container");
+	/** @type {HTMLTemplateElement} */ // @ts-ignore
+	const answerTemplate = document.getElementById("answer-template");
+	/** @type {HTMLFieldSetElement} */ // @ts-ignore
+	const answerFragment = answerTemplate.content.firstElementChild.cloneNode(true);
+	const n = answersContainer.childElementCount;
+
+	const taskAnswerTextId = `task-answer-${n}-text`;
+	const taskAnswerTextHelpId = taskAnswerTextId + "-help";
+	/** @type {HTMLInputElement} */ // @ts-ignore
+	const taskAnswerText = answerFragment.querySelector("#task-answer-x-text");
+	answerFragment
+		.querySelector('[for="task-answer-x-text"]')
+		?.setAttribute("for", taskAnswerTextId);
+	taskAnswerText.id = taskAnswerTextId;
+	taskAnswerText.setAttribute("aria-describedby", taskAnswerTextHelpId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-text-help").id = taskAnswerTextHelpId;
+
+	const correctCheckboxId = `task-answer-${n}-correct`;
+	/** @type {HTMLInputElement} */ // @ts-ignore
+	const correctCheckbox = answerFragment.querySelector("#task-answer-x-correct");
+	correctCheckbox.id = correctCheckboxId;
+	answerFragment
+		.querySelector('[for="task-answer-x-correct"]')
+		?.setAttribute("for", correctCheckboxId);
+
+	const addChallengeCheckboxId = `task-answer-${n}-add-challenge`;
+	/** @type {HTMLInputElement} */ // @ts-ignore
+	const addChallengeCheckbox = answerFragment.querySelector("#task-answer-x-add-challenge");
+	addChallengeCheckbox.id = addChallengeCheckboxId;
+	answerFragment
+		.querySelector('[for="task-answer-x-add-challenge"]')
+		?.setAttribute("for", addChallengeCheckboxId);
+
+	const explanationId = `task-answer-${n}-explanation`;
+	answerFragment
+		.querySelector('[for="task-answer-x-explanation"]')
+		?.setAttribute("for", explanationId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-explanation").id = explanationId;
+
+	/** @type {HTMLFieldSetElement} */ // @ts-ignore
+	const challengeDetailsFieldset = answerFragment.querySelector(
+		"fieldset#task-answer-x-challenge"
+	);
+	challengeDetailsFieldset.id = `task-answer-${n}-challenge`;
+
+	const imageId = `task-answer-${n}-image`;
+	answerFragment.querySelector('[for="task-answer-x-image"]')?.setAttribute("for", imageId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-image").id = imageId;
+
+	const subdomainId = `task-answer-${n}-subdomain`;
+	answerFragment
+		.querySelector('[for="task-answer-x-subdomain"]')
+		?.setAttribute("for", subdomainId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-subdomain").id = subdomainId;
+
+	const flagId = `task-answer-${n}-flag`;
+	answerFragment.querySelector('[for="task-answer-x-flag"]')?.setAttribute("for", flagId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-flag").id = flagId;
+
+	const intervalId = `task-answer-${n}-interval`;
+	const intervalHelpId = intervalId + "-help";
+	answerFragment.querySelector('[for="task-answer-x-interval"]')?.setAttribute("for", intervalId);
+	/** @type {HTMLInputElement} */ // @ts-ignore
+	const intervalInput = answerFragment.querySelector("#task-answer-x-interval");
+	intervalInput.id = intervalId;
+	intervalInput.setAttribute("aria-describedby", intervalHelpId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-interval-help").id = intervalHelpId;
+
+	addChallengeCheckbox.addEventListener("click", () =>
+		challengeDetailsFieldset.classList.toggle("d-none")
+	);
+	correctCheckbox.addEventListener("click", () => {
+		if (correctCheckbox.checked) {
+			addChallengeCheckbox.disabled = true;
+			addChallengeCheckbox.checked = false;
+			challengeDetailsFieldset.classList.add("d-none");
+		} else {
+			addChallengeCheckbox.disabled = false;
+		}
+	});
+
+	answersContainer.appendChild(answerFragment);
+	if (focus) answerFragment.querySelector("input")?.focus();
+}
+
+document.getElementById("task-add-answer")?.addEventListener("click", (e) => {
+	e.preventDefault();
+	addAnswer(true);
+});
+
+addAnswer();
+
+taskForm.addEventListener("submit", (e) => {
+	e.preventDefault();
+	const data = {
+		name: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("name")).value,
+		category: /** @type {HTMLSelectElement} */ (taskForm.elements.namedItem("category")).value,
+		description: taskDescriptionTextarea.value,
+		taskImage: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("taskImage")).value,
+		subdomain: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("subdomain")).value,
+		flag: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("flag")).value,
+		resetInterval: Number.parseInt(
+			/** @type {HTMLInputElement} */ (taskForm.elements.namedItem("resetInterval")).value
+		),
+		hints: /** @type {string[]} */ ([]),
+		question: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("question")).value,
+		answers: /** @type {any[]} */ ([]),
+		visible: true,
+	};
+
+	/** @type {NodeListOf<HTMLInputElement>} */
+	const hintElements = taskForm.querySelectorAll('input[name="hint[]"]');
+	for (const hintInput of hintElements) {
+		const val = hintInput.value;
+		if (val) data.hints.push(val);
+	}
+
+	const n = document.getElementById("answers-container")?.childElementCount ?? 0;
+	for (let i = 0; i < n; ++i) {
+		const prefix = `task-answer-${i}-`;
+		/** @type {(IncorrectAnswer & Partial<Omit<ChallengeDoc, "challengeKind">>) | CorrectAnswer} */
+		const answer = {
+			// @ts-ignore
+			text: document.getElementById(prefix + "text").value, // @ts-ignore
+			correct: document.getElementById(prefix + "correct").checked,
+		};
+
+		// @ts-ignore
+		const explanation = document.getElementById(prefix + "explanation").value;
+		if (explanation) answer.explanation = explanation;
+
+		// @ts-ignore
+		if (document.getElementById(prefix + "add-challenge").checked && !answer.correct) {
+			// @ts-ignore
+			answer.taskImage = document.getElementById(prefix + "image").value; // @ts-ignore
+			answer.subdomain = document.getElementById(prefix + "subdomain").value; // @ts-ignore
+			answer.flag = document.getElementById(prefix + "flag").value;
+			answer.resetInterval = Number.parseInt(
+				// @ts-ignore
+				document.getElementById(prefix + "interval").value
+			);
+		}
+
+		data.answers.push(answer);
+	}
+
+	fetch(taskForm.action, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(data),
+	})
+		.then((r) => r.json())
+		.then(throwIfError)
+		.catch((e) => console.error(e));
+});
 
 /**
  * @template R

@@ -18,6 +18,9 @@
 			<symbol id="pencil-fill" viewBox="0 0 16 16">
 				<path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
 			</symbol>
+			<symbol id="x-lg" viewBox="0 0 16 16">
+				<path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+			</symbol>
 		</svg>
 		<h1 class="mb-3">Admin panel</h1>
 		<nav>
@@ -96,7 +99,82 @@
 				</div>
 				<div class="accordion my-3" id="categoriesAccordionContainer"></div>
 			</div>
-			<div class="tab-pane fade" id="nav-tasks" role="tabpanel" aria-labelledby="nav-tasks-tab" tabindex="0"><h2>Tasks</h2></div>
+			<div class="tab-pane fade" id="nav-tasks" role="tabpanel" aria-labelledby="nav-tasks-tab" tabindex="0">
+				<button class="btn btn-primary mt-3" id="new-task-btn">
+					<svg class="bi"><use href="#plus-circle"></use></svg>
+					New task
+				</button>
+				<div class="my-3 d-none" id="task-editor">
+					<h3 id="task-edit-header">New task</h3>
+					<form action="/admin/tasks" method="post" id="task-form">
+						<div class="mb-3">
+							<label for="task-name" class="form-label">Task name</label>
+							<input type="text" name="name" id="task-name" class="form-control" required>
+						</div>
+						<div class="mb-3">
+							<label for="task-category" class="form-label">Category</label>
+							<select name="category" id="task-category" class="form-select" required></select>
+						</div>
+						<div class="mb-3">
+							<div class="d-flex align-items-center justify-content-between">
+								<label for="task-description" class="form-label">Description</label>
+								<div class="mb-3 d-flex">
+									<input type="checkbox" class="btn-check" id="task-preview-toggle" autocomplete="off">
+									<label class="btn btn-outline-secondary btn-sm" for="task-preview-toggle">
+										<svg class="bi"><use href="#eye-fill"></use></svg>
+										Preview
+									</label>
+								</div>
+							</div>
+							<textarea name="description" id="task-description" rows="3" class="form-control mb-3" required></textarea>
+							<div id="task-description-preview" class="border border-1 rounded p-3 pb-0 d-none"></div>
+						</div>
+						<fieldset class="mb-3">
+							<legend class="form-label">Challenge details</legend>
+							<div class="mb-3">
+								<label for="task-image" class="form-label">Docker image</label>
+								<input type="text" name="taskImage" id="task-image" class="form-control" required>
+							</div>
+							<div class="mb-3">
+								<label for="task-subdomain" class="form-label">Subdomain</label>
+								<input type="text" name="subdomain" id="task-subdomain" class="form-control" required pattern="[\p{Lower}\p{Emoji}][\p{Lower}\p{Emoji}\-]*">
+							</div>
+							<div class="mb-3">
+								<label for="task-flag" class="form-label">Flag</label>
+								<input type="text" name="flag" id="task-flag" class="form-control" required>
+							</div>
+							<div class="mb-3">
+								<label for="task-interval" class="form-label">Reset interval</label>
+								<!--
+									https://technology.blog.gov.uk/2020/02/24/why-the-gov-uk-design-system-team-changed-the-input-type-for-numbers/
+									https://stackoverflow.blog/2022/12/26/why-the-number-input-is-the-worst-input/
+								-->
+								<input type="text" name="resetInterval" id="task-interval" class="form-control" inputmode="numeric" pattern="0|[1-9][0-9]*" required aria-describedby="task-interval-help">
+								<div id="task-interval-help" class="form-text">
+									How often should the task be restarted (in seconds). Set to 0 to disable automatic restart.
+								</div>
+							</div>
+							<fieldset>
+								<legend class="form-label">Hints</legend>
+								<ol id="task-hints-list"></ol>
+								<button type="button" class="btn btn-secondary" id="task-add-hint">Add a hint</button>
+							</fieldset>
+						</fieldset>
+						<div class="mb-3">
+							<label for="task-question" class="form-label">Question</label>
+							<input type="text" name="question" id="task-question" class="form-control" required>
+						</div>
+						<fieldset class="mb-3">
+							<legend class="form-label">Answers</legend>
+							<div id="answers-container"></div>
+							<button type="button" class="btn btn-secondary" id="task-add-answer">Add an answer</button>
+						</fieldset>
+						<input type="checkbox" class="d-none" name="visible" disabled checked hidden>
+						<button type="submit" id="task-btn-submit" class="btn btn-success">Create</button>
+						<button type="button" id="task-btn-cancel" class="btn btn-outline-danger">Cancel</button>
+					</form>
+				</div>
+			</div>
 		</div>
 		<template id="user-row-template">
 			<tr>
@@ -134,6 +212,63 @@
 					</div>
 				</div>
 			</div>
+		</template>
+		<template id="hint-template">
+			<li class="mb-2">
+				<div class="input-group">
+					<input type="text" name="hint[]" class="form-control" placeholder="Hint" aria-label="Hint" required><%# Mark as required, because hints can always be removed %>
+					<button class="btn btn-outline-danger" type="button" aria-label="Delete hint">
+						<svg class="bi">
+							<use href="#x-lg"></use>
+						</svg>
+					</button>
+				</div>
+			</li>
+		</template>
+		<template id="answer-template">
+			<fieldset class="border rounded-2 p-3 pb-0 mb-3">
+				<div class="mb-3">
+					<label for="task-answer-x-text" class="form-label">Answer</label>
+					<input type="text" name="answers[][text]" id="task-answer-x-text" class="form-control" required aria-describedby="task-answer-x-text-help">
+					<div id="task-answer-x-text-help" class="form-text">
+						Answer can contain HTML markup.
+					</div>
+				</div>
+				<div class="mb-3 form-check">
+					<input type="checkbox" name="answers[][correct]" id="task-answer-x-correct" class="form-check-input">
+					<label for="task-answer-x-correct" class="form-check-label">Answer is correct</label>
+				</div>
+				<div class="mb-3 form-check">
+					<input type="checkbox" id="task-answer-x-add-challenge" class="form-check-input">
+					<label for="task-answer-x-add-challenge" class="form-check-label">Add challenge</label>
+				</div>
+				<div class="mb-3">
+					<label for="task-answer-x-explanation" class="form-label">Explanation</label>
+					<input type="text" name="answers[][explanation]" id="task-answer-x-explanation" class="form-control">
+				</div>
+				<fieldset class="d-none" id="task-answer-x-challenge">
+					<legend class="form-label">Challenge details</legend>
+					<div class="mb-3">
+						<label for="task-answer-x-image" class="form-label">Docker image</label>
+						<input type="text" name="answers[][taskImage]" id="task-answer-x-image" class="form-control">
+					</div>
+					<div class="mb-3">
+						<label for="task-answer-x-subdomain" class="form-label">Subdomain</label>
+						<input type="text" name="answers[][subdomain]" id="task-answer-x-subdomain" class="form-control" pattern="[\p{Lower}\p{Emoji}][\p{Lower}\p{Emoji}\-]*">
+					</div>
+					<div class="mb-3">
+						<label for="task-answer-x-flag" class="form-label">Flag</label>
+						<input type="text" name="answers[][flag]" id="task-answer-x-flag" class="form-control">
+					</div>
+					<div class="mb-3">
+						<label for="task-answer-x-interval" class="form-label">Reset interval</label>
+						<input type="text" name="answers[][resetInterval]" id="task-answer-x-interval" class="form-control" inputmode="numeric" pattern="0|[1-9][0-9]*" aria-describedby="task-answer-x-interval-help">
+						<div id="task-answer-x-interval-help" class="form-text">
+							How often should the task be restarted (in seconds). Set to 0 to disable automatic restart.
+						</div>
+					</div>
+				</fieldset>
+			</fieldset>
 		</template>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.5/marked.min.js" integrity="sha512-5JZDwulT+S/K8p/KO4tikNKA5t6Ebb+tqPwT7Ma+lVpJuS4G+Z0lSktWcl8hymXeFqCprGEuKGOCrKjyulql/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

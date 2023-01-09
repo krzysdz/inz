@@ -1,6 +1,8 @@
 import { Router, default as express } from "express";
 import { ObjectId } from "mongodb";
-import { db } from "../db.js";
+import { domainToASCII } from "url";
+import { addChallenge, checkTag, reloadNginx } from "../challenges.js";
+import { client, db } from "../db.js";
 import { processMarkdown } from "../markdown.js";
 import { adminOnly } from "../middleware.js";
 
@@ -171,6 +173,271 @@ adminRouter.put("/categories/:cid", async (req, res) => {
 // 	const html = await processMarkdown(req.body);
 // 	res.type("text/plain").send(html);
 // });
+
+adminRouter.post("/tasks", async (req, res) => {
+	if (!req.body) res.status(400).json({ error: "Bad request", message: "No request body" });
+	const {
+		name,
+		category,
+		description,
+		taskImage,
+		subdomain: subdomainUnicode,
+		flag,
+		resetInterval,
+		hints,
+		question,
+		answers,
+		visible = true,
+	} = req.body;
+	if (
+		typeof name !== "string" ||
+		typeof description !== "string" ||
+		typeof taskImage !== "string" ||
+		typeof subdomainUnicode !== "string" ||
+		typeof flag !== "string" ||
+		typeof resetInterval !== "number" ||
+		!Array.isArray(hints) ||
+		hints.some((hint) => typeof hint !== "string") ||
+		typeof question !== "string" ||
+		!Array.isArray(answers) ||
+		typeof visible !== "boolean" ||
+		// These 3 must absolutely not be empty
+		!name ||
+		!taskImage ||
+		!subdomainUnicode
+	)
+		return res
+			.status(422)
+			.json({ error: "Invalid data", message: "Request body validation failed" });
+
+	/** @type {ObjectId} */
+	let categoryId;
+	try {
+		categoryId = new ObjectId(category);
+	} catch (e) {
+		return res
+			.status(422)
+			.json({ error: "Invalid data", message: "Invalid category ObjectId" });
+	}
+
+	try {
+		for (const answer of answers) {
+			if (!answer.correct && typeof answer.subdomain === "string" && answer.subdomain)
+				answer.subdomain = checkSubdomain(answer.subdomain);
+		}
+	} catch (e) {
+		return res.status(422).json({
+			error: "Invalid data",
+			message: "Answer challenge subdomain verification failed:\n" + e,
+		});
+	}
+
+	const subdomains = answers.map((a) => a.subdomain).filter((sub) => !!sub);
+	if (new Set(subdomains).size !== subdomains.length)
+		return res
+			.status(422)
+			.json({ error: "Invalid data", message: "Multiple answers with the same subdomain" });
+
+	const renderedDescription = processMarkdown(description);
+	/** @type {ChallengeDoc} */
+	let taskChallengeDoc;
+	try {
+		const subdomain = checkSubdomain(subdomainUnicode);
+		taskChallengeDoc = checkTag({
+			taskImage,
+			subdomain,
+			flag,
+			resetInterval,
+			challengeKind: "task",
+		});
+	} catch (e) {
+		return res
+			.status(422)
+			.json({ error: "Invalid data", message: "Invalid task subdomain:\n" + e });
+	}
+	/** @type {ChallengeDoc[]} */
+	const answerChallengeDocs = answers
+		.filter(
+			(a) =>
+				!a.correct &&
+				typeof a.taskImage === "string" &&
+				a.taskImage &&
+				typeof a.subdomain === "string" &&
+				a.subdomain &&
+				typeof a.flag === "string" &&
+				a.flag &&
+				typeof a.resetInterval === "number"
+		)
+		.map(({ taskImage, subdomain, flag, resetInterval }) =>
+			checkTag({
+				taskImage,
+				subdomain,
+				flag,
+				resetInterval,
+				challengeKind: "subtask",
+			})
+		);
+
+	const session = client.startSession();
+	try {
+		session.startTransaction();
+
+		/** @type {import("mongodb").Collection<ChallengeDoc>} */
+		const challengesCollection = db.collection("challenges");
+		const taskInsertResult = await challengesCollection.insertOne(taskChallengeDoc, {
+			session,
+		});
+		/* eslint-disable no-mixed-spaces-and-tabs, indent */
+		const subChallengeResult = answerChallengeDocs
+			? await challengesCollection.insertMany(answerChallengeDocs, {
+					session,
+			  })
+			: { insertedIds: [] };
+		/* eslint-enable no-mixed-spaces-and-tabs, indent */
+
+		const answersSubDocs = answers.map(({ text, correct, explanation, subdomain }) => {
+			/** @type {TaskDoc["answers"][0]} */
+			const answer = { text, correct };
+			if (explanation && typeof explanation === "string") answer.explanation = explanation;
+			if (!answer.correct && subdomain) {
+				const idx = answerChallengeDocs.findIndex((a) => a.subdomain === subdomain);
+				if (idx === -1) throw new Error("Subdomain not found in answers");
+				const challengeId = subChallengeResult.insertedIds[idx];
+				answer.challengeId = challengeId;
+			}
+			return answer;
+		});
+
+		/** @type {import("mongodb").Collection<TaskDoc>} */
+		const tasksCollection = db.collection("tasks");
+		await tasksCollection.insertOne(
+			{
+				name,
+				categoryId,
+				descriptionMd: description,
+				descriptionRendered: await renderedDescription,
+				challengeId: taskInsertResult.insertedId,
+				hints,
+				question,
+				answers: answersSubDocs,
+				visible,
+			},
+			{ session }
+		);
+
+		// Create Docker containers, don't wait for them to be created, because it can take a while
+		const challengesPromises = answerChallengeDocs.map((ch) => addChallenge(ch));
+		challengesPromises.push(addChallenge(taskChallengeDoc));
+		Promise.allSettled(challengesPromises)
+			.then((results) => {
+				for (const result of results) {
+					if (result.status === "rejected")
+						console.error("Starting challenge failed with reason:\n", result.reason);
+				}
+				return reloadNginx();
+			})
+			.catch((e) => console.error(e));
+
+		await session.commitTransaction();
+		res.json({ error: null });
+	} catch (error) {
+		console.error(error);
+		await session.abortTransaction();
+		if (!res.headersSent)
+			res.status(500).json({
+				error: "Server error",
+				message: "An error occurred, check server logs",
+			});
+	} finally {
+		await session.endSession();
+	}
+});
+
+adminRouter.get("/tasks", async (_req, res) => {
+	/** @type {import("mongodb").Collection<TaskDoc>} */
+	const tasksCollection = db.collection("tasks");
+
+	const tasks = await tasksCollection
+		.aggregate([
+			// add challenge as "challenge" array of 1 document
+			{
+				$lookup: {
+					from: "challenges",
+					localField: "challengeId",
+					foreignField: "_id",
+					as: "challenge",
+				},
+			},
+			// add challenges from answers as "answerChallenges" array
+			{
+				$lookup: {
+					from: "challenges",
+					localField: "answers.challengeId",
+					foreignField: "_id",
+					as: "answerChallenges",
+				},
+			},
+			// select and modify returned fields
+			{
+				$project: {
+					name: 1,
+					categoryId: 1,
+					descriptionMd: 1,
+					descriptionRendered: 1,
+					question: 1,
+					hints: 1,
+					visible: 1,
+					// Replace the "challenge" array with the only document inside it
+					challenge: {
+						$first: "$challenge",
+					},
+					// Add a challenge field (subdocument) to each answer with challengeId
+					answers: {
+						$map: {
+							input: "$answers",
+							as: "a",
+							in: {
+								$mergeObjects: [
+									"$$a",
+									{
+										challenge: {
+											$first: {
+												$filter: {
+													input: "$answerChallenges",
+													cond: {
+														$eq: ["$$this._id", "$$a.challengeId"],
+													},
+													limit: 1,
+												},
+											},
+										},
+									},
+								],
+							},
+						},
+					},
+				},
+			},
+		])
+		.toArray();
+
+	res.json({ error: null, tasks });
+});
+
+/**
+ * Converts domain to ASCII representation and
+ * checks if it meets criteria (not empty, not IP address, single level - no dots)
+ * @param {string} subdomain subdomain possibly using unicode characters
+ * @returns ASCII representation of the subdomain using punycode
+ */
+function checkSubdomain(subdomain) {
+	const asciiSubdomain = domainToASCII(subdomain);
+	if (asciiSubdomain.length === 0) throw new Error("Subdomain must not be empty");
+	if (asciiSubdomain.includes("."))
+		throw new Error("Subdomain must not include dots or be an IPv4 address");
+	if (asciiSubdomain.includes("[")) throw new Error("Subdomain must not be an IPv6 address");
+	return asciiSubdomain;
+}
 
 /**
  * @template R
