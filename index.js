@@ -7,9 +7,10 @@ import { DB_NAME, SECRET } from "./config.js";
 import { startupChallenges } from "./src/challenges.js";
 import { client } from "./src/db.js";
 import { flasher } from "./src/flash.js";
-import { authenticated } from "./src/middleware.js";
+import { addCategoriesList, authenticated } from "./src/middleware.js";
 import { adminRouter } from "./src/routes/admin.js";
 import { authRouter } from "./src/routes/auth.js";
+import { categoryRouter } from "./src/routes/category.js";
 import { profileRouter } from "./src/routes/profile.js";
 
 const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
@@ -63,6 +64,7 @@ app.use((req, res, next) => {
 	res.locals.activePage = ""; // placeholder
 	next();
 });
+app.use(addCategoriesList);
 
 app.get("/", (_req, res) => {
 	res.render("index", { activePage: "home" });
@@ -71,6 +73,7 @@ app.get("/", (_req, res) => {
 app.use("/auth", authRouter);
 app.use("/profile", [authenticated, profileRouter]);
 app.use("/admin", [authenticated, adminRouter]);
+app.use("/category", categoryRouter);
 
 app.use((_req, res) => {
 	res.status(404).render("errors/404");

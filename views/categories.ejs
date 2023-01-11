@@ -1,0 +1,6 @@
+<%- include("header", { title: "Categories" }) %>
+		<h1 class="mb-3">Categories</h1>
+		<% for (const { name } of locals.categories) { %>
+		<a href="/category/<%= encodeURIComponent(name) %>"><%= name %></a>
+		<% } %>
+<%- include("footer") %>

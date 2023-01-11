@@ -31,8 +31,11 @@ if (process.env.NODE_ENV === "production") {
 async function setupDb(db) {
 	/** @type {import("mongodb").Collection<CategoryDoc>} */
 	const categories = db.collection("categories");
-	// Make sure that there is an unique index on name in the categories collection
-	await categories.createIndex({ name: 1 }, { unique: true });
+	// Make sure that there is an unique index on name in the categories collection, use collation for case-insensitive search
+	await categories.createIndex(
+		{ name: 1 },
+		{ unique: true, collation: { locale: "en", strength: 2 } }
+	);
 
 	/** @type {import("mongodb").Collection<ChallengeDoc>} */
 	const challenges = db.collection("challenges");
