@@ -66,3 +66,20 @@ interface ChallengeDoc {
 	resetInterval: number;
 	challengeKind: "task" | "subtask";
 }
+
+interface FullTaskIncorrectAnswer extends TaskQuestionAnswerBase {
+	correct: false;
+}
+
+interface FullTaskIncorrectAnswerWChallenge extends FullTaskIncorrectAnswer {
+	/** Id of the challenge document */
+	challengeId: import("mongodb").ObjectId;
+	/** Challenge document */
+	challenge: import("mongodb").WithId<ChallengeDoc>;
+}
+
+interface FullTaskDoc extends Omit<TaskDoc, "challengeId"> {
+	/** Challenge document */
+	challenge: import("mongodb").WithId<ChallengeDoc>;
+	answers: (CorrectAnswer | FullTaskIncorrectAnswer | FullTaskIncorrectAnswerWChallenge)[];
+}

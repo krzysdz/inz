@@ -354,73 +354,7 @@ adminRouter.post("/tasks", async (req, res) => {
 });
 
 adminRouter.get("/tasks", async (_req, res) => {
-	/** @type {import("mongodb").Collection<TaskDoc>} */
-	const tasksCollection = db.collection("tasks");
-
-	const tasks = await tasksCollection
-		.aggregate([
-			// add challenge as "challenge" array of 1 document
-			{
-				$lookup: {
-					from: "challenges",
-					localField: "challengeId",
-					foreignField: "_id",
-					as: "challenge",
-				},
-			},
-			// add challenges from answers as "answerChallenges" array
-			{
-				$lookup: {
-					from: "challenges",
-					localField: "answers.challengeId",
-					foreignField: "_id",
-					as: "answerChallenges",
-				},
-			},
-			// select and modify returned fields
-			{
-				$project: {
-					name: 1,
-					categoryId: 1,
-					descriptionMd: 1,
-					descriptionRendered: 1,
-					question: 1,
-					hints: 1,
-					visible: 1,
-					// Replace the "challenge" array with the only document inside it
-					challenge: {
-						$first: "$challenge",
-					},
-					// Add a challenge field (subdocument) to each answer with challengeId
-					answers: {
-						$map: {
-							input: "$answers",
-							as: "a",
-							in: {
-								$mergeObjects: [
-									"$$a",
-									{
-										challenge: {
-											$first: {
-												$filter: {
-													input: "$answerChallenges",
-													cond: {
-														$eq: ["$$this._id", "$$a.challengeId"],
-													},
-													limit: 1,
-												},
-											},
-										},
-									},
-								],
-							},
-						},
-					},
-				},
-			},
-		])
-		.toArray();
-
+	const tasks = await db.collection("fullTasks").find().toArray();
 	res.json({ error: null, tasks });
 });
 
