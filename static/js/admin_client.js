@@ -1,6 +1,7 @@
 /** @type {HTMLUListElement} */ // @ts-ignore
 const pagination = document.getElementById("users-pagination");
 let currentPage = 1;
+let categoriesMap = /** @type {Record<string, string>} */ ({});
 
 /**
  * Throws an error if `r.error` is truthy
@@ -280,7 +281,8 @@ async function loadCategories() {
 	for (const cat of response.categories) {
 		/** @type {HTMLDivElement} */ // @ts-ignore
 		const clone = categoryTemplate.content.firstElementChild.cloneNode(true);
-		const { _id, name, descriptionRaw, descriptionProcessed } = cat;
+		const { _id, name, descriptionRaw, descriptionProcessed } = cat; // @ts-ignore
+		categoriesMap[_id] = name;
 		const headerId = `category-${_id}`;
 		const collapseId = `categoryCollapse-${_id}`;
 
@@ -314,8 +316,6 @@ async function loadCategories() {
 	document.getElementById("categoriesAccordionContainer")?.replaceChildren(categoriesFragment);
 	document.getElementById("task-category")?.replaceChildren(optionsFragment);
 }
-
-loadCategories().catch((e) => console.error(e));
 
 /** @type {HTMLDivElement} */ // @ts-ignore
 const taskEditor = document.getElementById("task-editor");
@@ -530,8 +530,134 @@ taskForm.addEventListener("submit", (e) => {
 	})
 		.then((r) => r.json())
 		.then(throwIfError)
+		.then(() => {
+			taskForm.reset();
+			taskEditor.classList.add("d-none");
+			return loadTasks();
+		})
 		.catch((e) => console.error(e));
 });
+
+/**
+ * Fills the `rootElement` with data from `dataObj`
+ * @param {Element} rootElement A node to be filled
+ * @param {Record<string, any>} dataObj Data
+ */
+function templateRenderer(rootElement, dataObj, prefix = "") {
+	for (const [key, value] of Object.entries(dataObj)) {
+		const htmlKey = escapeHtml(prefix + key);
+		const toShow = rootElement.querySelectorAll(`[data-show-if="${htmlKey}"]`);
+		for (const e of toShow) {
+			if (e instanceof HTMLElement || e instanceof SVGElement) e.classList.remove("d-none");
+		}
+		const elements = rootElement.querySelectorAll(`[data-field="${htmlKey}"]`);
+		if (!elements.length) continue;
+
+		if (Array.isArray(value)) {
+			for (const elem of elements) {
+				if (!(elem instanceof HTMLElement || elem instanceof SVGElement)) continue;
+
+				const toRepeatQuery = elem.dataset.repeat;
+				if (!toRepeatQuery) continue;
+
+				// Repeat only the first occurrence
+				const repeat = elem.querySelector(toRepeatQuery);
+				if (!(repeat instanceof HTMLElement || repeat instanceof SVGElement)) continue;
+
+				// Only arrays of objects and simple values (string, number, bool) are supported
+				const frag = new DocumentFragment();
+				for (const arrayElement of value) {
+					const clone = repeat.cloneNode(true);
+					if (!(clone instanceof HTMLElement || clone instanceof SVGElement)) break;
+					if (typeof arrayElement === "object") {
+						templateRenderer(clone, arrayElement, `${prefix}${key}.`);
+					} else {
+						templateRendererSimpleVal(clone, arrayElement);
+					}
+					frag.appendChild(clone);
+				}
+				repeat.parentNode?.replaceChild(frag, repeat);
+			}
+		} else if (typeof value === "object") {
+			for (const elem of elements) {
+				templateRenderer(elem, value, `${prefix}${key}.`);
+			}
+		} else {
+			for (const elem of elements) {
+				if (!(elem instanceof HTMLElement || elem instanceof SVGElement)) continue;
+
+				templateRendererSimpleVal(elem, value);
+			}
+		}
+	}
+}
+
+/**
+ * Internal templateRenderer function
+ * @param {HTMLElement | SVGElement} elem Template element
+ * @param {any} value Simple (convertible to string) value to apply
+ */
+function templateRendererSimpleVal(elem, value) {
+	const setAttr = elem.dataset.setAttr;
+	const raw = elem.dataset.raw;
+	if (setAttr) {
+		if (typeof value === "boolean") {
+			if (value) elem.setAttribute(setAttr, "");
+			else elem.removeAttribute(setAttr);
+		} else {
+			elem.setAttribute(setAttr, String(value));
+		}
+	}
+	if (raw) {
+		elem.innerHTML = value;
+	} else {
+		elem.textContent = value;
+	}
+}
+
+async function loadTasks() {
+	const response = await fetch("/admin/tasks");
+	const data = await response.json();
+	throwIfError(data);
+	const { tasks } = data;
+	/** @type {HTMLTemplateElement} */ // @ts-ignore
+	const template = document.getElementById("task-item-template");
+	const frag = new DocumentFragment();
+	for (const task of tasks) {
+		task.category = categoriesMap[task.categoryId];
+		const it = template.content.firstElementChild?.cloneNode(true);
+		if (!(it instanceof HTMLElement)) break;
+
+		templateRenderer(it, task);
+
+		const taskId = `task-${task._id}`; // @ts-ignore
+		it.querySelector("#task-x").id = taskId;
+		it.querySelector('[aria-labelledby="task-x"]')?.setAttribute("aria-labelledby", taskId);
+
+		const collapseId = `taskCollapse-${task._id}`;
+		/** @type {HTMLButtonElement} */ // @ts-ignore
+		const button = it.querySelector('button[aria-controls="taskCollapse-x"]'); // @ts-ignore
+		it.querySelector("#taskCollapse-x").id = collapseId;
+		button.setAttribute("aria-controls", collapseId);
+		button.dataset.bsTarget = "#" + collapseId;
+
+		frag.appendChild(it);
+	}
+	document.getElementById("tasksAccordionContainer")?.replaceChildren(frag);
+}
+
+loadCategories()
+	.then(() => loadTasks())
+	.catch((e) => console.error(e));
+
+function escapeHtml(/** @type {string} */ unsafe) {
+	return unsafe
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&#039;");
+}
 
 /**
  * @template R

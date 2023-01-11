@@ -100,11 +100,11 @@
 				<div class="accordion my-3" id="categoriesAccordionContainer"></div>
 			</div>
 			<div class="tab-pane fade" id="nav-tasks" role="tabpanel" aria-labelledby="nav-tasks-tab" tabindex="0">
-				<button class="btn btn-primary mt-3" id="new-task-btn">
+				<button class="btn btn-primary my-3" id="new-task-btn">
 					<svg class="bi"><use href="#plus-circle"></use></svg>
 					New task
 				</button>
-				<div class="my-3 d-none" id="task-editor">
+				<div class="mb-3 d-none" id="task-editor">
 					<h3 id="task-edit-header">New task</h3>
 					<form action="/admin/tasks" method="post" id="task-form">
 						<div class="mb-3">
@@ -174,6 +174,10 @@
 						<button type="button" id="task-btn-cancel" class="btn btn-outline-danger">Cancel</button>
 					</form>
 				</div>
+				<section class="mb-3">
+					<h2>List of tasks</h2>
+					<div class="accordion" id="tasksAccordionContainer"></div>
+				</section>
 			</div>
 		</div>
 		<template id="user-row-template">
@@ -269,6 +273,59 @@
 					</div>
 				</fieldset>
 			</fieldset>
+		</template>
+		<template id="task-item-template">
+			<div class="accordion-item">
+				<h3 class="accordion-header" id="task-x">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#taskCollapse-x" data-field="name" aria-expanded="false" aria-controls="taskCollapse-x">
+						Name goes here
+					</button>
+				</h3>
+				<div id="taskCollapse-x" class="accordion-collapse collapse" aria-labelledby="task-x" data-bs-parent="#tasksAccordionContainer">
+					<div class="accordion-body">
+						<small>Category: <span data-field="category">XYZ</span></small>
+						<div data-field="descriptionRendered" data-raw="true">
+							Content is innerHTMLed here
+						</div>
+						<details data-field="challenge">
+							<summary>Challenge details</summary>
+							<div class="row">
+								<div class="col">Subdomain: <code data-field="challenge.subdomain">xxy</code></div>
+								<div class="col">Image: <code data-field="challenge.taskImage">zzw:latest</code></div>
+							</div>
+							<div class="row">
+								<div class="col">Flag: <code data-field="challenge.flag">flag{sadf}</code></div>
+								<div class="col">Interval: <code data-field="challenge.resetInterval">60</code></div>
+							</div>
+						</details>
+						<h4>Hints</h4>
+						<ul data-field="hints" data-repeat='li[data-arr-target="true"]'>
+							<li data-arr-target="true">Hint 2</li>
+						</ul>
+						<h4>Answers</h4>
+						<ul class="list-unstyled" style="padding-left: 2rem;" data-field="answers" data-repeat="li">
+							<li>
+								<input type="checkbox" style="margin-left: -1.4rem; margin-right: .2rem;" aria-label="Correct" disabled readonly data-field="answers.correct" data-set-attr="checked">
+								<div class="d-inline" data-field="answers.text" data-raw="true">This is the answer</div>
+								<p class="mb-0 d-none" data-show-if="answers.explanation">
+									<em data-field="answers.explanation">This is the answer explanation</em>
+								</p>
+								<details class="d-none" data-field="answers.challenge" data-show-if="answers.challenge">
+									<summary>Challenge details</summary>
+									<div class="row">
+										<div class="col">Subdomain: <code data-field="answers.challenge.subdomain">xxy</code></div>
+										<div class="col">Image: <code data-field="answers.challenge.taskImage">zzw:latest</code></div>
+									</div>
+									<div class="row">
+										<div class="col">Flag: <code data-field="answers.challenge.flag">flag{sadf}</code></div>
+										<div class="col">Interval: <code data-field="answers.challenge.resetInterval">60</code></div>
+									</div>
+								</details>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
 		</template>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.5/marked.min.js" integrity="sha512-5JZDwulT+S/K8p/KO4tikNKA5t6Ebb+tqPwT7Ma+lVpJuS4G+Z0lSktWcl8hymXeFqCprGEuKGOCrKjyulql/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
