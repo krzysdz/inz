@@ -12,6 +12,7 @@ import { adminRouter } from "./src/routes/admin.js";
 import { authRouter } from "./src/routes/auth.js";
 import { categoryRouter } from "./src/routes/category.js";
 import { profileRouter } from "./src/routes/profile.js";
+import { taskRouter } from "./src/routes/task.js";
 
 const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
 
@@ -74,6 +75,7 @@ app.use("/auth", authRouter);
 app.use("/profile", [authenticated, profileRouter]);
 app.use("/admin", [authenticated, adminRouter]);
 app.use("/category", categoryRouter);
+app.use("/task", taskRouter);
 
 app.use((_req, res) => {
 	res.status(404).render("errors/404");

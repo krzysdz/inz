@@ -1,0 +1,113 @@
+<%- include("header", { title: locals.task.name, highlighting: true }) %>
+		<% const challengeURL = `https://${locals.task.challenge.subdomain}.${locals.domain}` %>
+		<article>
+			<h1 class="mb-3"><%= locals.task.name %></h1>
+			<div><%- locals.task.descriptionRendered %></div>
+			<div class="my-3">
+				<a href="<%= challengeURL %>"><%= challengeURL %></a>
+			</div>
+			<% if (locals.task.hints) { %>
+			<section class="mb-3">
+				<h4>Hints</h4>
+				<%	locals.task.hints.forEach((hint, index) => { %>
+				<details>
+					<summary>Hint <%- index + 1 %></summary>
+					<%= hint %>
+				</details>
+				<%	}); %>
+			</section>
+			<% } %>
+			<% if (locals.loggedIn) {
+				if (locals.solved) { %>
+			<div class="alert alert-success" role="alert">
+				Congratulations! Task solved.
+			</div>
+			<%		if (locals.answered) { %>
+			<section>
+				<h4><%= locals.task.question %></h4>
+				<% for (let i = 0; i < locals.task.answers.length; ++i) {
+					const { text, explanation, challenge } = locals.task.answers[i];
+					const correct = locals.task.answers[i].correct === locals.userAnswers[i]; %>
+				<div class="form-check">
+					<input
+						type="checkbox"
+						name="answer[<%- i %>]"
+						id="answer-<%- i %>"
+						class="form-check-input"
+						disabled
+						<% if (locals.userAnswers[i]) { %> checked <% } %>>
+					<label
+						for="answer-<%- i %>"
+						class="<%- correct ? "text-success" : "text-danger" %>">
+						<%= text %>
+					</label>
+					<div class="form-text">
+					<% if (explanation) { %>
+						<div><em>Explanation: </em><%= explanation %></div>
+					<% } %>
+					<% if (challenge) {
+						const challengeURL = `https://${challenge.subdomain}.${locals.domain}`;
+						const solved = locals.userSubChallengeSolves && locals.userSubChallengeSolves.includes(challenge._id.toString()); %>
+						<div>Additional challenge: <a href="<%= challengeURL %>"><%= challengeURL %></a></div>
+						<% if (solved) { %>
+						<div class="alert alert-success" role="alert">
+							Congratulations! Additional challenge solved.
+						</div>
+						<% } else { %>
+						<form class="row g-3" action="/task/<%- locals.task._id %>/<%- challenge._id %>" method="post">
+							<div class="col-auto">
+								<label for="answer-<%- i %>-flag" class="form-label mt-1">Flag</label>
+							</div>
+							<div class="col-auto">
+								<input type="text" class="form-control form-control-sm" id="answer-<%- i %>-flag" name="flag">
+							</div>
+							<div class="col-auto">
+								<button type="submit" class="btn btn-primary btn-sm">Submit</button>
+							</div>
+						</form>
+						<% } %>
+					<% } %>
+					</div>
+				</div>
+				<% } %>
+				<div class="alert alert-info mt-2" role="alert">
+					Correct answers: <em><%- locals.task.answers
+						.filter(a => a.correct)
+						.map(a => a.text)
+						.join(", ") %></em>
+				</div>
+			</section>
+			<%		} else {%>
+			<form action="/task/<%- locals.task._id %>/quiz" method="post">
+				<h4><%= locals.task.question %></h4>
+				<% for (let i = 0; i < locals.task.answers.length; ++i) {
+					const { text } = locals.task.answers[i]; %>
+				<div class="form-check">
+					<input type="checkbox" name="answer[<%- i %>]" id="answer-<%- i %>" class="form-check-input">
+					<label for="answer-<%- i %>" class="form-check-label"><%= text %></label>
+				</div>
+				<% } %>
+				<button type="submit" class="btn btn-primary my-3">Submit</button>
+			</form>
+			<%		}
+				} else {
+					if (locals.invalidFlag) { %>
+			<div class="alert alert-warning" role="alert">
+				Invalid flag.<% if (locals.task.hints.length) { %> If you have problems check hints.<% } %>
+			</div>
+			<% 		} %>
+			<form method="post" class="mb-3">
+				<div class="mb-3">
+					<label for="flag" class="form-label">Flag</label>
+					<input type="text" class="form-control" id="flag" name="flag">
+				</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+			<% }
+			} else { %>
+			<div class="alert alert-warning mb-3" role="alert">
+				Log in to submit a flag.
+			</div>
+			<% } %>
+		</article>
+<%- include("footer") %>

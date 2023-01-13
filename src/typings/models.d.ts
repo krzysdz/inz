@@ -2,6 +2,10 @@ interface UserDoc {
 	_id: string;
 	hash: string;
 	role: "user" | "admin";
+	/** `challenge id`: `date solved` map */
+	solves?: Record<string, Date | undefined>;
+	/** `task id`: `answer` map of question answers */
+	answers?: Record<string, boolean[]>;
 }
 
 interface CategoryDoc {
