@@ -16,7 +16,7 @@ declare interface ChangeUserRole {
 }
 
 declare interface CategoriesList {
-	categories: WithId<CategoryDoc>[]
+	categories: WithId<CategoryDoc>[];
 }
 
 declare interface AdminErrorResponse {
