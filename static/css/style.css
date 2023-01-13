@@ -16,6 +16,10 @@
 	--bs-dropdown-link-hover-bg: var(--bs-danger-bg-subtle);
 }
 
+.home-container {
+	max-width: 40em;
+}
+
 .table.last-col-small tr > *:last-child {
 	/* Super hacky, but works: 2 * (button width [1em] + 2 * (button padding [0.75em] + button border [1 px])) + 2 * cell padding [1rem] + 5px for some reason (spacing?) */
 	/* --weird-width: calc(5em + 4px + 1rem + 5px);

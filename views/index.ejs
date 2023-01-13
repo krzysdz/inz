@@ -1,3 +1,14 @@
 <%- include("header", { title: "Home page" }) %>
-Hello!
+		<div class="home-container mx-auto text-center">
+			<h1>Inz</h1>
+			<p class="lead">Start learning about common security vulnerabilities in web applications. Log in, go to <a class="text-body" href="/category">Categories</a> and select a topic that you are interested in.</p>
+			<p class="lead">
+			<% if (locals.loggedIn) { %>
+				<a class="btn btn-lg fw-semibold btn-secondary" href="/category">Categories</a>
+			<% } else { %>
+				<a class="btn btn-lg fw-semibold btn-success mx-2" href="/auth/register">Register</a>
+				<a class="btn btn-lg fw-semibold btn-primary mx-2 my-2" href="/auth/login">Sign in</a>
+			<% } %>
+			</p>
+		</div>
 <%- include("footer") %>
