@@ -10,7 +10,7 @@
 	"author": "krzysdz",
 	"type": "module",
 	"dependencies": {
-		"argon2": "^0.30.2",
+		"argon2": "^0.30.3",
 		"connect-mongo": "^4.6.0",
 		"dockerode": "^3.3.4",
 		"ejs": "^3.1.8",
@@ -28,8 +28,8 @@
 		"@types/express-session": "^1.17.5",
 		"@types/marked": "^4.0.8",
 		"@types/node": "^18.11.18",
-		"eslint": "^8.30.0",
+		"eslint": "^8.31.0",
 		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "^2.8.1"
+		"prettier": "^2.8.2"
 	}
 }
