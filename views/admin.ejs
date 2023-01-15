@@ -168,7 +168,10 @@
 						</fieldset>
 						<div class="mb-3">
 							<label for="task-question" class="form-label">Question</label>
-							<input type="text" name="question" id="task-question" class="form-control" required>
+							<input type="text" name="question" id="task-question" class="form-control" required aria-describedby="task-question-help">
+							<div id="task-question-help" class="form-text">
+								Question can contain HTML markup. If code highlighting is required, use the description to render the desired Markdown code block as HTML.
+							</div>
 						</div>
 						<fieldset class="mb-3">
 							<legend class="form-label">Answers</legend>
@@ -314,6 +317,8 @@
 						<ul data-field="hints" data-repeat='li[data-arr-target="true"]'>
 							<li data-arr-target="true">Hint 2</li>
 						</ul>
+						<h4>Question</h4>
+						<p data-field="question" data-raw="true">Question</p>
 						<h4>Answers</h4>
 						<ul class="list-unstyled" style="padding-left: 2rem;" data-field="answers" data-repeat="li">
 							<li>

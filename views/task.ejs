@@ -24,7 +24,7 @@
 			</div>
 			<%		if (locals.answered) { %>
 			<section>
-				<h4><%= locals.task.question %></h4>
+				<h4><%- locals.task.question %></h4>
 				<% for (let i = 0; i < locals.task.answers.length; ++i) {
 					const { text, explanation, challenge } = locals.task.answers[i];
 					const correct = locals.task.answers[i].correct === locals.userAnswers[i]; %>
@@ -39,7 +39,7 @@
 					<label
 						for="answer-<%- i %>"
 						class="<%- correct ? "text-success" : "text-danger" %>">
-						<%= text %>
+						<%- text %>
 					</label>
 					<div class="form-text">
 					<% if (explanation) { %>
@@ -84,7 +84,7 @@
 					const { text } = locals.task.answers[i]; %>
 				<div class="form-check">
 					<input type="checkbox" name="answer[<%- i %>]" id="answer-<%- i %>" class="form-check-input">
-					<label for="answer-<%- i %>" class="form-check-label"><%= text %></label>
+					<label for="answer-<%- i %>" class="form-check-label"><%- text %></label>
 				</div>
 				<% } %>
 				<button type="submit" class="btn btn-primary my-3">Submit</button>
