@@ -162,10 +162,17 @@ async function restartChallengeContainer(port, challengeDoc) {
 	// Stop and remove the container
 	try {
 		const container = docker.getContainer(containerName);
-		await container.stop({ t: 10 });
+		try {
+			await container.stop({ t: 10 });
+		} catch (error) {
+			// @ts-ignore
+			if (error?.reason === "container already stopped")
+				console.warn(`Container ${containerName} already stopped`);
+			else console.error(`Failed to stop ${containerName} during restart with error`, error);
+		}
 		await container.remove({ v: true });
 	} catch (error) {
-		console.error(`Failed to stop ${containerName} during restart with error`, error);
+		console.error(`Failed to remove ${containerName} during restart with error`, error);
 	}
 
 	// Recreate and start
