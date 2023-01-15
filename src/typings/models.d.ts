@@ -66,6 +66,8 @@ interface ChallengeDoc {
 	subdomain: string;
 	/** The flag used in the task */
 	flag: string;
+	/** Whether the flag should be passed to the container as an environmental variable `FLAG` */
+	flagInEnv?: boolean;
 	/** How frequently should the task be restarted. 0 - never */
 	resetInterval: number;
 	challengeKind: "task" | "subtask";

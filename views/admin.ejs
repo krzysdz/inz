@@ -139,9 +139,15 @@
 								<label for="task-subdomain" class="form-label">Subdomain</label>
 								<input type="text" name="subdomain" id="task-subdomain" class="form-control" required pattern="[\p{Lower}\p{Emoji}][\p{Lower}\p{Emoji}\-]*">
 							</div>
-							<div class="mb-3">
+							<div class="mb-2">
 								<label for="task-flag" class="form-label">Flag</label>
 								<input type="text" name="flag" id="task-flag" class="form-control" required>
+							</div>
+							<div class="form-check mb-3">
+								<input class="form-check-input" type="checkbox" name="flagInEnv" id="task-flagInEnv">
+								<label class="form-check-label" for="task-flagInEnv">
+									Expose flag as <code>FLAG</code> environmental variable
+								</label>
 							</div>
 							<div class="mb-3">
 								<label for="task-interval" class="form-label">Reset interval</label>
@@ -260,9 +266,15 @@
 						<label for="task-answer-x-subdomain" class="form-label">Subdomain</label>
 						<input type="text" name="answers[][subdomain]" id="task-answer-x-subdomain" class="form-control" pattern="[\p{Lower}\p{Emoji}][\p{Lower}\p{Emoji}\-]*">
 					</div>
-					<div class="mb-3">
+					<div class="mb-2">
 						<label for="task-answer-x-flag" class="form-label">Flag</label>
 						<input type="text" name="answers[][flag]" id="task-answer-x-flag" class="form-control">
+					</div>
+					<div class="form-check mb-3">
+						<input class="form-check-input" type="checkbox" name="answers[][flagInEnv]" id="task-answer-x-flagInEnv">
+						<label class="form-check-label" for="task-answer-x-flagInEnv">
+							Expose flag as <code>FLAG</code> environmental variable
+						</label>
 					</div>
 					<div class="mb-3">
 						<label for="task-answer-x-interval" class="form-label">Reset interval</label>

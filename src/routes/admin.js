@@ -183,6 +183,7 @@ adminRouter.post("/tasks", async (req, res) => {
 		taskImage,
 		subdomain: subdomainUnicode,
 		flag,
+		flagInEnv,
 		resetInterval,
 		hints,
 		question,
@@ -195,6 +196,7 @@ adminRouter.post("/tasks", async (req, res) => {
 		typeof taskImage !== "string" ||
 		typeof subdomainUnicode !== "string" ||
 		typeof flag !== "string" ||
+		typeof flagInEnv !== "boolean" ||
 		typeof resetInterval !== "number" ||
 		!Array.isArray(hints) ||
 		hints.some((hint) => typeof hint !== "string") ||
@@ -266,13 +268,16 @@ adminRouter.post("/tasks", async (req, res) => {
 				a.subdomain &&
 				typeof a.flag === "string" &&
 				a.flag &&
-				typeof a.resetInterval === "number"
+				typeof a.resetInterval === "number" &&
+				a.flagInEnv &&
+				typeof a.flagInEnv === "boolean"
 		)
-		.map(({ taskImage, subdomain, flag, resetInterval }) =>
+		.map(({ taskImage, subdomain, flag, flagInEnv, resetInterval }) =>
 			checkTag({
 				taskImage,
 				subdomain,
 				flag,
+				flagInEnv,
 				resetInterval,
 				challengeKind: "subtask",
 			})

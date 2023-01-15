@@ -435,6 +435,13 @@ function addAnswer(focus) {
 	// @ts-ignore
 	answerFragment.querySelector("#task-answer-x-flag").id = flagId;
 
+	const flagInEnvId = `task-answer-${n}-flagInEnv`;
+	answerFragment
+		.querySelector('[for="task-answer-x-flagInEnv"]')
+		?.setAttribute("for", flagInEnvId);
+	// @ts-ignore
+	answerFragment.querySelector("#task-answer-x-flagInEnv").id = flagInEnvId;
+
 	const intervalId = `task-answer-${n}-interval`;
 	const intervalHelpId = intervalId + "-help";
 	answerFragment.querySelector('[for="task-answer-x-interval"]')?.setAttribute("for", intervalId);
@@ -478,6 +485,8 @@ taskForm.addEventListener("submit", (e) => {
 		taskImage: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("taskImage")).value,
 		subdomain: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("subdomain")).value,
 		flag: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("flag")).value,
+		flagInEnv: /** @type {HTMLInputElement} */ (taskForm.elements.namedItem("flagInEnv"))
+			.checked,
 		resetInterval: Number.parseInt(
 			/** @type {HTMLInputElement} */ (taskForm.elements.namedItem("resetInterval")).value
 		),
@@ -513,7 +522,8 @@ taskForm.addEventListener("submit", (e) => {
 			// @ts-ignore
 			answer.taskImage = document.getElementById(prefix + "image").value; // @ts-ignore
 			answer.subdomain = document.getElementById(prefix + "subdomain").value; // @ts-ignore
-			answer.flag = document.getElementById(prefix + "flag").value;
+			answer.flag = document.getElementById(prefix + "flag").value; // @ts-ignore
+			answer.flagInEnv = document.getElementById(prefix + "flagInEnv").checked;
 			answer.resetInterval = Number.parseInt(
 				// @ts-ignore
 				document.getElementById(prefix + "interval").value

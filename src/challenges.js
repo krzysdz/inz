@@ -179,6 +179,7 @@ async function restartChallengeContainer(port, challengeDoc) {
 	const container = await docker.createContainer({
 		name: containerName,
 		Image: challengeDoc.taskImage,
+		Env: challengeDoc.flagInEnv ? [`FLAG=${challengeDoc.flag}`] : [],
 		ExposedPorts: {
 			"80/tcp": {},
 		},
