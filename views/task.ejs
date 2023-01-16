@@ -79,7 +79,7 @@
 			</section>
 			<%		} else {%>
 			<form action="/task/<%- locals.task._id %>/quiz" method="post">
-				<h4><%= locals.task.question %></h4>
+				<h4><%- locals.task.question %></h4>
 				<% for (let i = 0; i < locals.task.answers.length; ++i) {
 					const { text } = locals.task.answers[i]; %>
 				<div class="form-check">
