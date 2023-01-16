@@ -34,6 +34,8 @@ app.use(
 			},
 		},
 		crossOriginEmbedderPolicy: { policy: "credentialless" },
+		// HSTS header is set by nginx
+		hsts: false,
 	})
 );
 app.use("/static", express.static("static"));
