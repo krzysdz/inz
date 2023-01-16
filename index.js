@@ -2,7 +2,7 @@ import MongoStore from "connect-mongo";
 import express from "express";
 import session from "express-session";
 import helmet from "helmet";
-import { env, exit } from "process";
+import { exit } from "process";
 import { DB_NAME, SECRET } from "./config.js";
 import { startupChallenges } from "./src/challenges.js";
 import { client } from "./src/db.js";
@@ -14,7 +14,7 @@ import { categoryRouter } from "./src/routes/category.js";
 import { profileRouter } from "./src/routes/profile.js";
 import { taskRouter } from "./src/routes/task.js";
 
-const PORT = env.PORT ? Number.parseInt(env.PORT) : 3000;
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3000;
 
 // start all the challenges before starting the server
 await startupChallenges();
@@ -22,6 +22,8 @@ await startupChallenges();
 const app = express();
 app.set("view engine", "ejs");
 app.set("view options", { strict: true });
+// In production the only way is through nginx, which sets X-Forwarded-For to $remote_addr
+if (process.env.NODE_ENV === "production") app.set("trust proxy", true);
 
 app.use(
 	helmet({
