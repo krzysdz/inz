@@ -6,6 +6,10 @@
 	fill: currentcolor;
 }
 
+.checked-dropdown .active .bi {
+	display: block !important;
+}
+
 .logout-btn {
 	--bs-dropdown-link-color: var(--bs-danger-text);
 	--bs-border-color: var(--bs-danger-border-subtle);
