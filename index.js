@@ -30,8 +30,10 @@ app.use(
 		contentSecurityPolicy: {
 			directives: {
 				scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+				imgSrc: ["'self'", "data:", "https://imgs.xkcd.com"],
 			},
 		},
+		crossOriginEmbedderPolicy: { policy: "credentialless" },
 	})
 );
 app.use("/static", express.static("static"));
