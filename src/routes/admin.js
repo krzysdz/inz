@@ -249,6 +249,7 @@ adminRouter.post("/tasks", async (req, res) => {
 			taskImage,
 			subdomain,
 			flag,
+			flagInEnv,
 			resetInterval,
 			challengeKind: "task",
 		});
@@ -293,7 +294,7 @@ adminRouter.post("/tasks", async (req, res) => {
 			session,
 		});
 		/* eslint-disable no-mixed-spaces-and-tabs, indent */
-		const subChallengeResult = answerChallengeDocs
+		const subChallengeResult = answerChallengeDocs.length
 			? await challengesCollection.insertMany(answerChallengeDocs, {
 					session,
 			  })
