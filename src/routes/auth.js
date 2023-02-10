@@ -18,7 +18,10 @@ const register = async (req, res) => {
 	if (!req.body) res.sendStatus(400);
 	const { username, password, passwordRetype } = req.body;
 	if (typeof username !== "string") errors.push("Username must be provided.");
-	else if (username.length > 255) errors.push("Maximum username length is 255 characters.");
+	else {
+		if (username.length > 255) errors.push("Maximum username length is 255 characters.");
+		if (username.includes("\x00")) errors.push("Username must not contain the NULL character");
+	}
 	if (typeof password !== "string") errors.push("Password must be provided.");
 	else if (password.length < 8 || password.length > 64)
 		errors.push("Password be have between 8 and 64 characters long.");
