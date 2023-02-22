@@ -135,7 +135,7 @@
 						</li>
 					<% if (locals.loggedIn) { %>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle<%= ["profile", "admin panel"].includes(locals.activePage) ? " active" : "" %>" href="#" role="button"
+							<a class="nav-link dropdown-toggle<%= ["profile", "admin panel"].includes(locals.activePage) ? " active" : "" %>" href="/profile" role="button"
 								data-bs-toggle="dropdown" aria-expanded="false">
 								<%= locals.username %>
 							</a>
