@@ -11,12 +11,12 @@
 }
 
 .logout-btn {
-	--bs-dropdown-link-color: var(--bs-danger-text);
+	--bs-dropdown-link-color: var(--bs-danger-text-emphasis);
 	--bs-border-color: var(--bs-danger-border-subtle);
 }
 
 .logout-btn:hover {
-	--bs-dropdown-link-hover-color: var(--bs-danger-text);
+	--bs-dropdown-link-hover-color: var(--bs-danger-text-emphasis);
 	--bs-dropdown-link-hover-bg: var(--bs-danger-bg-subtle);
 }
 

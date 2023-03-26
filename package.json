@@ -11,25 +11,25 @@
 	"type": "module",
 	"dependencies": {
 		"argon2": "^0.30.3",
-		"connect-mongo": "^4.6.0",
-		"dockerode": "^3.3.4",
-		"ejs": "^3.1.8",
+		"connect-mongo": "^5.0.0",
+		"dockerode": "^3.3.5",
+		"ejs": "^3.1.9",
 		"express": "^5.0.0-beta.1",
 		"express-session": "^1.17.3",
 		"helmet": "^6.0.1",
 		"highlight.js": "^11.7.0",
-		"marked": "^4.2.5",
-		"mongodb": "^4.13.0"
+		"marked": "^4.3.0",
+		"mongodb": "^5.1.0"
 	},
 	"devDependencies": {
-		"@types/dockerode": "^3.3.14",
-		"@types/ejs": "^3.1.1",
-		"@types/express": "^4.17.15",
-		"@types/express-session": "^1.17.5",
+		"@types/dockerode": "^3.3.15",
+		"@types/ejs": "^3.1.2",
+		"@types/express": "^4.17.17",
+		"@types/express-session": "^1.17.7",
 		"@types/marked": "^4.0.8",
-		"@types/node": "^18.11.18",
-		"eslint": "^8.31.0",
+		"@types/node": "^18.15.10",
+		"eslint": "^8.36.0",
 		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "^2.8.2"
+		"prettier": "^2.8.7"
 	}
 }
