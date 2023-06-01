@@ -216,12 +216,15 @@ export async function createNginxConfig(subdomain, port) {
 	if (asciiSubdomain.includes("[")) throw new Error("Subdomain must not be an IPv6 address");
 
 	const config = `server {
+		listen 443       quic;
 		listen 443       ssl http2;
+		listen [::]:443  quic;
 		listen [::]:443  ssl http2;
 
 		server_name  ${asciiSubdomain}.${TASKS_DOMAIN};
 
 		location / {
+			add_header   Alt-Svc 'h3=":443"; ma=86400';
 			proxy_pass   http://127.0.0.1:${port};
 		}
 	}
