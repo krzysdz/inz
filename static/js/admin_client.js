@@ -144,17 +144,27 @@ pagination.addEventListener("click", (e) => {
 /** @type {import("marked").marked} */ // @ts-ignore
 // eslint-disable-next-line no-undef
 const mdParser = marked.marked;
+/** @type {import("marked-highlight")} */ // @ts-ignore
+// eslint-disable-next-line no-undef
+const { markedHighlight: highlightExt } = markedHighlight;
+/** @type {import("marked-gfm-heading-id")} */ // @ts-ignore
+// eslint-disable-next-line no-undef
+const { gfmHeadingId } = markedGfmHeadingId;
 /** @type {import("highlight.js").default} */ // @ts-ignore
 // eslint-disable-next-line no-undef
 const highlighter = hljs;
 
-mdParser.setOptions({
-	highlight: (code, lang) => {
-		const language = highlighter.getLanguage(lang) ? lang : "plaintext";
-		return highlighter.highlight(code, { language }).value;
-	},
-	langPrefix: "hljs language-",
-});
+mdParser.use(
+	highlightExt({
+		highlight: (code, lang) => {
+			const language = highlighter.getLanguage(lang) ? lang : "plaintext";
+			return highlighter.highlight(code, { language }).value;
+		},
+		langPrefix: "hljs language-",
+	}),
+	gfmHeadingId(),
+	{ mangle: false }
+);
 
 /** @type {HTMLInputElement} */ // @ts-ignore
 const toggleCatPreviewBtn = document.getElementById("preview-toggle");

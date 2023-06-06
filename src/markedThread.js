@@ -1,14 +1,20 @@
 import hljs from "highlight.js";
 import { marked } from "marked";
+import { gfmHeadingId } from "marked-gfm-heading-id";
+import { markedHighlight } from "marked-highlight";
 import { parentPort } from "node:worker_threads";
 
-marked.setOptions({
-	highlight: (code, lang) => {
-		const language = hljs.getLanguage(lang) ? lang : "plaintext";
-		return hljs.highlight(code, { language }).value;
-	},
-	langPrefix: "hljs language-",
-});
+marked.use(
+	markedHighlight({
+		highlight: (code, lang) => {
+			const language = hljs.getLanguage(lang) ? lang : "plaintext";
+			return hljs.highlight(code, { language }).value;
+		},
+		langPrefix: "hljs language-",
+	}),
+	gfmHeadingId(),
+	{ mangle: false }
+);
 
 if (parentPort === null) throw new Error("Parent port is null");
 
