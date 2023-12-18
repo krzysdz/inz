@@ -297,7 +297,7 @@ adminRouter.post("/tasks", async (req, res) => {
 		const subChallengeResult = answerChallengeDocs.length
 			? await challengesCollection.insertMany(answerChallengeDocs, {
 					session,
-			  })
+				})
 			: { insertedIds: [] };
 		/* eslint-enable no-mixed-spaces-and-tabs, indent */
 
