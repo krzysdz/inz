@@ -12,8 +12,7 @@ marked.use(
 		},
 		langPrefix: "hljs language-",
 	}),
-	gfmHeadingId(),
-	{ mangle: false }
+	gfmHeadingId()
 );
 
 if (parentPort === null) throw new Error("Parent port is null");

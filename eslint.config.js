@@ -18,6 +18,7 @@ export default [
 		rules: {
 			...js.configs.recommended.rules,
 			"prettier/prettier": "error",
+			"no-unused-vars": ["error", { caughtErrors: "none" }],
 		},
 	},
 	{
@@ -34,6 +35,7 @@ export default [
 		rules: {
 			...js.configs.recommended.rules,
 			"prettier/prettier": "error",
+			"no-unused-vars": ["error", { caughtErrors: "none" }],
 		},
 	},
 ];

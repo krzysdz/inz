@@ -293,13 +293,11 @@ adminRouter.post("/tasks", async (req, res) => {
 		const taskInsertResult = await challengesCollection.insertOne(taskChallengeDoc, {
 			session,
 		});
-		/* eslint-disable no-mixed-spaces-and-tabs, indent */
 		const subChallengeResult = answerChallengeDocs.length
 			? await challengesCollection.insertMany(answerChallengeDocs, {
 					session,
 				})
 			: { insertedIds: [] };
-		/* eslint-enable no-mixed-spaces-and-tabs, indent */
 
 		const answersSubDocs = answers.map(({ text, correct, explanation, subdomain }) => {
 			/** @type {TaskDoc["answers"][0]} */
