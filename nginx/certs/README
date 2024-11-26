@@ -5,6 +5,6 @@ This directory is gitignored to avoid committing private keys.
 
 Expected files:
 
--   privkey.pem (private key)
--   fullchain.pem (full certificate chain with the leaf certificate)
--   chain.pem (CA and intermediate certificates)
+- privkey.pem (private key)
+- fullchain.pem (full certificate chain with the leaf certificate)
+- chain.pem (CA and intermediate certificates)
